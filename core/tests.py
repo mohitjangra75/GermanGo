@@ -82,8 +82,19 @@ class PageRenderTests(SeededTestCase):
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, "Learn German.")
         self.assertContains(response, "Speak with Confidence.")
-        self.assertContains(response, 'rel="canonical"')
+        self.assertContains(response, 'rel="canonical" href="http://localhost:8000/"')
+        self.assertContains(response, 'property="og:url" content="http://localhost:8000/"')
         self.assertContains(response, "application/ld+json")
+
+    def test_the_canonical_url_uses_site_domain_whichever_host_served_it(self):
+        url = self.course.get_absolute_url()
+        with self.settings(
+            SITE_DOMAIN="germango.in",
+            SITE_PROTOCOL="https",
+            ALLOWED_HOSTS=["germango.in", "www.germango.in"],
+        ):
+            response = self.client.get(url, HTTP_HOST="www.germango.in")
+        self.assertContains(response, f'rel="canonical" href="https://germango.in{url}"')
 
     def test_a_course_page_shows_its_fee_and_syllabus(self):
         from core.templatetags.germango import money

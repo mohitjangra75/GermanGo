@@ -425,28 +425,25 @@ canvas actually initialises and no JavaScript errors are thrown.
 
 ## Deployment
 
-Edit the four settings at the bottom of `config/settings.py`:
-
-```python
-SECRET_KEY = "<a long random string>"
-DEBUG = False
-ALLOWED_HOSTS = ["germango.in"]
-SITE_DOMAIN, SITE_PROTOCOL = "germango.in", "https"
-```
-
-Then:
+There is one settings file. It runs in development unless the environment
+variable `DJANGO_ENV` is `production`, which switches on the live site at
+https://germango.in:
 
 ```bash
+export DJANGO_ENV=production
 python manage.py migrate
 python manage.py collectstatic --noinput
 python manage.py check --deploy          # must report no issues
-gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3
 ```
 
-With `DEBUG = False`, settings automatically enable HSTS with preload, SSL
-redirect, secure and HTTP-only cookies, `X-Frame-Options: DENY`, nosniff, a
-strict referrer policy, compressed hashed static files, and the SMTP email
-backend.
+In production, settings turn off `DEBUG`, accept only `germango.in` and
+`www.germango.in`, enable HSTS, secure and HTTP-only cookies, and compressed
+hashed static files, and trust Cloudflare's `X-Forwarded-Proto` header. The
+site is served through a Cloudflare named tunnel, so turn on "Always Use
+HTTPS" in the Cloudflare dashboard: Django does not redirect HTTP itself.
+`X-Frame-Options: DENY`, nosniff and a strict referrer policy apply in both
+modes.
 
 Two things to set before launch:
 

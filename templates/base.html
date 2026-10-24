@@ -8,14 +8,14 @@
   <title>{% block title %}{{ seo.full_title|default:"GermanGo — German language school" }}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ seo.meta_description }}{% endblock %}">
   {% if seo.noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
-  <link rel="canonical" href="{{ seo.canonical_url }}">
+  <link rel="canonical" href="{% canonical_url %}">
 
   {# --- Open Graph / Twitter ------------------------------------------- #}
   <meta property="og:site_name" content="{{ SITE_NAME }}">
   <meta property="og:type" content="{{ seo.og_type|default:'website' }}">
   <meta property="og:title" content="{{ seo.full_title }}">
   <meta property="og:description" content="{{ seo.meta_description }}">
-  <meta property="og:url" content="{{ seo.canonical_url }}">
+  <meta property="og:url" content="{% canonical_url %}">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="{% if seo.og_image %}{{ seo.og_image }}{% else %}{% static 'images/og-default.svg' %}{% endif %}">
   <meta name="twitter:card" content="summary_large_image">

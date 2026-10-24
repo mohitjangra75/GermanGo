@@ -11,6 +11,8 @@ import json
 from django import template
 from django.utils.safestring import mark_safe
 
+from core.seo import SeoData
+
 register = template.Library()
 
 CURRENCY_SYMBOLS = {"INR": "₹", "EUR": "€", "GBP": "£", "USD": "$"}
@@ -155,3 +157,16 @@ def active_nav(context, *url_names) -> str:
     if current in url_names or match.app_name in url_names:
         return "is-active"
     return ""
+
+
+@register.simple_tag(takes_context=True)
+def canonical_url(context) -> str:
+    """The page's absolute URL on SITE_DOMAIN, whichever host served it.
+
+    ``SeoData.canonical_url`` needs the request, which a template cannot pass
+    to a method, so ``{{ seo.canonical_url }}`` would silently render empty.
+    """
+    request = context.get("request")
+    if request is None:
+        return ""
+    return (context.get("seo") or SeoData()).canonical_url(request)

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap enquiry-page">
+    <div class="enquiry-page__pitch">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>Enquire</li></ol>
+      </nav>
+
+      <span class="eyebrow">Get in touch</span>
+      <h1 style="font-size:var(--t-2xl);margin-top:var(--s-3)">
+        Tell us where you are and we'll do the rest
+      </h1>
+      <p class="lede" style="margin-top:var(--s-4)">
+        You do not need to know your level or pick a course. A short message is
+        enough — we will reply with a recommendation, a teacher and a start date.
+      </p>
+
+      <ul class="enquiry__points" style="margin-top:var(--s-6)">
+        <li>{% icon "check-circle" 17 %} A free 15-minute placement chat</li>
+        <li>{% icon "check-circle" 17 %} A course and teacher matched to your goal</li>
+        <li>{% icon "check-circle" 17 %} Clear pricing, no enrolment fee</li>
+        <li>{% icon "check-circle" 17 %} A reply within one working day</li>
+      </ul>
+
+      <div class="contact-card">
+        <div class="card__kicker">Or reach us directly</div>
+        <div class="contact-card__rows">
+          <a href="tel:{{ CONTACT.phone|cut:' ' }}">{% icon "phone" 16 %} {{ CONTACT.phone }}</a>
+          <a href="mailto:{{ CONTACT.email }}">{% icon "mail" 16 %} {{ CONTACT.email }}</a>
+          {% if CONTACT.address %}<span>{% icon "pin" 16 %} {{ CONTACT.address }}</span>{% endif %}
+          <span>{% icon "clock" 16 %} {{ CONTACT.hours }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="enquiry-page__form">
+      <div class="enquiry__form-card">
+        {% if course %}
+          <p class="pill pill--red" style="margin-bottom:var(--s-4)">About: {{ course.title }}</p>
+        {% elif plan %}
+          <p class="pill pill--red" style="margin-bottom:var(--s-4)">About: the {{ plan.name }} plan</p>
+        {% elif teacher %}
+          <p class="pill pill--red" style="margin-bottom:var(--s-4)">About: lessons with {{ teacher.name }}</p>
+        {% endif %}
+
+        <div id="enquiry-{{ form_id }}">
+          {% include "leads/partials/form.html" %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if faqs %}
+<section class="section section--sunk">
+  <div class="wrap wrap--narrow">
+    <div class="section__head"><h2>Before you write</h2></div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

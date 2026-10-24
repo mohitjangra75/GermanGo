@@ -1,0 +1,15 @@
+New enquiry from the website.
+
+  Name     {{ enquiry.name }}
+  Phone    {{ enquiry.phone|default:"—" }}
+  Email    {{ enquiry.email|default:"—" }}
+  Interest {{ enquiry.interest }}
+  Page     {{ enquiry.source_path }}
+  Received {{ enquiry.created_at|date:"j M Y, H:i" }}
+
+Message
+-------
+{{ enquiry.message|default:"(no message)" }}
+
+Open it in the admin to follow up:
+{{ enquiry.pk }} — /admin/leads/enquiry/{{ enquiry.pk }}/change/

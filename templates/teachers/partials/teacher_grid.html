@@ -1,0 +1,16 @@
+<p class="small muted" style="margin-bottom:var(--s-4)">
+  {{ total }} teacher{{ total|pluralize }}
+</p>
+
+{% if teachers %}
+  <div class="grid grid--4">
+    {% for teacher in teachers %}
+      {% include "components/teacher_card.html" with teacher=teacher %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">
+    <h3>No teachers match that filter</h3>
+    <p>Clear the filter, or <a href="{% url 'leads:enquiry' %}">ask us</a> who is available.</p>
+  </div>
+{% endif %}

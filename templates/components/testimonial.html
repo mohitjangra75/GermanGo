@@ -1,0 +1,19 @@
+<blockquote class="quote-card">
+  <div class="quote-card__stars" aria-label="{{ item.rating }} out of 5">
+    {% for _ in item.star_range %}{% icon "star" 14 %}{% endfor %}
+  </div>
+  <p class="quote-card__text">{{ item.quote }}</p>
+  <footer class="quote-card__who">
+    <span class="quote-card__avatar">
+      {% if item.avatar %}
+        <img src="{{ item.avatar.url }}" alt="" width="40" height="40" loading="lazy">
+      {% else %}{{ item.name|initials }}{% endif %}
+    </span>
+    <span>
+      <strong>{{ item.name }}</strong>
+      <span class="small" style="display:block;opacity:.7">
+        {{ item.role }}{% if item.level_reached %} · {{ item.level_reached }}{% endif %}
+      </span>
+    </span>
+  </footer>
+</blockquote>

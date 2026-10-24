@@ -1,0 +1,139 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F5F3EE">
+
+  <title>{% block title %}{{ seo.full_title|default:"GermanGo — German language school" }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ seo.meta_description }}{% endblock %}">
+  {% if seo.noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
+  <link rel="canonical" href="{{ seo.canonical_url }}">
+
+  {# --- Open Graph / Twitter ------------------------------------------- #}
+  <meta property="og:site_name" content="{{ SITE_NAME }}">
+  <meta property="og:type" content="{{ seo.og_type|default:'website' }}">
+  <meta property="og:title" content="{{ seo.full_title }}">
+  <meta property="og:description" content="{{ seo.meta_description }}">
+  <meta property="og:url" content="{{ seo.canonical_url }}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="{% if seo.og_image %}{{ seo.og_image }}{% else %}{% static 'images/og-default.svg' %}{% endif %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo.full_title }}">
+  <meta name="twitter:description" content="{{ seo.meta_description }}">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32.png' %}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/favicon-512.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon-180.png' %}">
+
+  {# --- Fonts: preconnect + non-blocking load ---------------------------- #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400..800&display=swap">
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400..800&display=swap">
+  </noscript>
+
+  {% comment %}
+    Runs before the stylesheets paint so animated elements are hidden from
+    the very first frame rather than flashing in, and so the curtain is
+    decided before anything is drawn.
+
+    Django's {# #} is single-line only -- a multi-line one renders as text,
+    which in <head> makes the parser open <body> early and throws every
+    later stylesheet into the body. Hence {% templatetag openblock %} comment {% templatetag closeblock %}.
+  {% endcomment %}
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.classList.remove('no-js');
+      root.classList.add('js');
+
+      var reduced = false;
+      try {
+        reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      } catch (e) { /* no matchMedia: full motion is the safe default */ }
+      if (reduced) root.dataset.reducedMotion = 'true';
+
+      // The curtain. Homepage only — it is an arrival moment, and playing it
+      // on every internal click would be an interruption rather than a
+      // flourish. Mode comes from CURTAIN_MODE in settings, and ?curtain=1
+      // forces it so it can be previewed without clearing session storage.
+      var mode = '{{ CURTAIN_MODE|escapejs }}';
+      var isHome = {% if request.resolver_match.view_name == 'core:home' %}true{% else %}false{% endif %};
+      var forced = window.location.search.indexOf('curtain=1') !== -1;
+      var play = isHome && !reduced && mode !== 'off';
+
+      if (play && mode === 'session' && !forced) {
+        try {
+          if (sessionStorage.getItem('germango-curtain')) {
+            play = false;
+          } else {
+            sessionStorage.setItem('germango-curtain', '1');
+          }
+        } catch (e) {
+          // Private mode blocks sessionStorage; play it. The CSS always
+          // finishes open, so nobody can be locked behind it.
+        }
+      }
+      if (play) root.dataset.curtain = 'on';
+    })();
+  </script>
+
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+  {% block extra_css %}{% endblock %}
+
+  {% if seo.json_ld %}
+    <script type="application/ld+json">{{ seo.json_ld }}</script>
+  {% endif %}
+
+  <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
+  <script src="{% static 'vendor/gsap.min.js' %}" defer></script>
+  <script src="{% static 'vendor/ScrollTrigger.min.js' %}" defer></script>
+  <script type="module" src="{% static 'js/main.js' %}"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% comment %}
+    The opening curtain, homepage only. Purely CSS: two fabric panels draw
+    apart and animation-fill-mode leaves them gathered away, so it ends open
+    even if no JavaScript ever runs. Only rendered where it can play, so no
+    other page carries the markup at all.
+  {% endcomment %}
+  {% if request.resolver_match.view_name == 'core:home' %}
+    <div class="curtain" data-curtain-el aria-hidden="true">
+      <div class="curtain__panel curtain__panel--left"></div>
+      <div class="curtain__panel curtain__panel--right"></div>
+      <div class="curtain__pelmet"></div>
+    </div>
+  {% endif %}
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  {% include "components/navbar.html" %}
+
+  {% if messages %}
+    <div class="toasts" data-toasts role="status" aria-live="polite">
+      {% for message in messages %}
+        <div class="toast toast--{{ message.tags|default:'info' }}">
+          <div>{{ message }}</div>
+          <button type="button" class="toast__close" data-toast-close aria-label="Dismiss">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "components/footer.html" %}
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

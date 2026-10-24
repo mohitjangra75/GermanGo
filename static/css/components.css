@@ -1,0 +1,1075 @@
+/* ==========================================================================
+   Reusable interface components.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Buttons
+
+   Rectangular, drawn with a border, and they step up-and-left onto a hard
+   shadow on hover. `--hard` comes from the surface, so on a dark panel the
+   shadow is gold rather than invisible ink.
+   -------------------------------------------------------------------------- */
+
+.btn {
+  --btn-bg: var(--ink);
+  --btn-fg: var(--paper);
+  --btn-bd: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: 0.78em 1.4em;
+  border: 1.5px solid var(--btn-bd);
+  border-radius: var(--r);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease),
+              box-shadow var(--dur-fast) var(--ease),
+              background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease);
+}
+
+.btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hard); color: var(--btn-fg); }
+.btn:active { transform: none; box-shadow: none; }
+.btn[disabled], .btn[aria-disabled="true"] {
+  opacity: .5; cursor: not-allowed; transform: none; box-shadow: none;
+}
+
+.btn--primary { --btn-bg: var(--red); --btn-fg: #fff; --btn-bd: var(--red); }
+.btn--primary:hover { --btn-bg: var(--red-soft); --btn-bd: var(--red-soft); }
+
+.btn--ghost { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: var(--ink); }
+.btn--ghost:hover { --btn-bg: var(--surface); }
+
+.btn--soft { --btn-bg: var(--surface); --btn-fg: var(--ink); --btn-bd: var(--line-strong); }
+.btn--soft:hover { --btn-bd: var(--ink); }
+
+.btn--success { --btn-bg: var(--green); --btn-fg: #fff; --btn-bd: var(--green); }
+.btn--lg { padding: 0.98em 1.7em; font-size: var(--t-base); }
+.btn--sm { padding: 0.55em 1em; font-size: var(--t-xs); min-height: 36px; }
+.btn--block { width: 100%; white-space: normal; text-align: center; }
+.btn--icon { padding: 0.6em; aspect-ratio: 1; }
+
+.btn svg { flex-shrink: 0; }
+
+/* On dark surfaces a ghost button is drawn in paper. */
+.section--ink .btn--ghost,
+.enquiry .btn--ghost,
+.footer .btn--ghost { --btn-fg: var(--paper); --btn-bd: var(--paper); }
+.section--ink .btn--ghost:hover,
+.enquiry .btn--ghost:hover { --btn-bg: rgba(255,255,255,.08); }
+
+/* HTMX request feedback, applied automatically to any in-flight element. */
+.btn.htmx-request { opacity: .65; pointer-events: none; }
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator { display: inline-flex; }
+
+.spinner {
+  width: 1em; height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --------------------------------------------------------------------------
+   Cards
+   -------------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+  transition: transform var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease);
+}
+
+.card--flat { box-shadow: none; }
+.card--sunk { background: var(--surface-sunk); border-color: var(--line); }
+.card--pad-lg { padding: var(--s-6); }
+
+a.card, .card--link { display: block; text-decoration: none; color: inherit; }
+a.card:hover, .card--hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-hard);
+  border-color: var(--ink);
+  color: inherit;
+}
+
+.card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-4); }
+.card__title { font-size: var(--t-lg); margin-bottom: var(--s-2); }
+.card__meta { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--t-sm); color: var(--ink-3); }
+.card__foot { margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--line); }
+
+/* --------------------------------------------------------------------------
+   Pills, chips and badges — small square labels, set in caps.
+   -------------------------------------------------------------------------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: var(--r-sm);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pill--level  { background: var(--ink); color: var(--paper); }
+.pill--red    { background: var(--red-wash);    color: var(--red); }
+.pill--green  { background: var(--green-wash);  color: var(--green); }
+.pill--yellow { background: var(--gold);        color: var(--ink); }
+.pill--blue   { background: var(--blue-wash);   color: var(--blue); }
+.pill--outline { background: transparent; border: 1px solid var(--line-strong); }
+
+.gender--der, .gender--masc { color: var(--gender-masc); }
+.gender--die, .gender--fem  { color: var(--gender-fem); }
+.gender--das, .gender--neut { color: var(--gender-neut); }
+
+.article-tag {
+  font-family: var(--font-mono);
+  font-size: .72em;
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: .02em;
+  opacity: .85;
+}
+
+/* --------------------------------------------------------------------------
+   Progress bar and ring
+   -------------------------------------------------------------------------- */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+.progress__value { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.progress__track {
+  height: 8px;
+  border-radius: var(--r-sm);
+  background: var(--paper-2);
+  overflow: hidden;
+}
+
+.progress--compact .progress__track { height: 6px; }
+
+.progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--red);
+  width: var(--pct, 0%);
+  transform-origin: left center;
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.progress--success .progress__fill { background: var(--green); }
+
+.ring { --ring-dur: 1s; }
+.ring__track { fill: none; stroke: var(--paper-2); }
+.ring__value {
+  fill: none;
+  stroke: var(--red);
+  stroke-linecap: butt;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset var(--ring-dur) var(--ease-out);
+}
+.ring__label {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 800;
+  fill: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation — an ink capsule floating just below the top edge, sitting on
+   the same 80% column as everything else. It carries the flag down its
+   left edge, the active page as a gold tab, and a gold offset shadow once
+   the page has scrolled under it.
+   -------------------------------------------------------------------------- */
+
+.nav {
+  --hard: var(--gold);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  padding-block: 10px;
+  background: transparent;
+  pointer-events: none;          /* only the capsule itself catches clicks */
+}
+
+/* No width here: this element also carries `.wrap`, and a `width: 100%`
+   declared later in the cascade would silently override the shared column. */
+.nav__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  height: 56px;
+  padding: 0 var(--s-3) 0 var(--s-6);
+  border-radius: var(--r-lg);
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+  pointer-events: auto;
+  box-shadow: 0 0 0 var(--gold);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+/* The flag, as a vertical bar down the leading edge. */
+.nav__inner::before {
+  content: "";
+  position: absolute;
+  left: 12px; top: 14px; bottom: 14px;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--paper) 0 33.34%, var(--red) 33.34% 66.67%, var(--gold) 66.67% 100%);
+}
+.nav.is-stuck .nav__inner { box-shadow: 4px 4px 0 var(--gold); transform: translate(-2px, -2px); }
+
+.nav .logo__word { color: var(--paper); }
+
+.nav__links { display: none; align-items: center; gap: 4px; }
+
+.nav__link {
+  position: relative;
+  padding: 7px 12px;
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: #C9C6BE;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+.nav__link:hover { color: var(--paper); background: rgba(255,255,255,.1); }
+.nav__link.is-active { color: var(--ink); background: var(--gold); font-weight: 800; }
+.nav__link.is-active:hover { color: var(--ink); background: var(--gold-soft); }
+
+.nav__actions { display: flex; align-items: center; gap: var(--s-3); }
+.nav .btn--ghost { --btn-fg: var(--paper); --btn-bd: rgba(255,255,255,.35); }
+.nav .btn--ghost:hover { --btn-bg: rgba(255,255,255,.1); --btn-bd: var(--paper); }
+
+.nav__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  background: var(--gold);
+  color: var(--ink);
+  font-size: var(--t-xs);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.nav__avatar {
+  width: 34px; height: 34px;
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  font-size: .76rem;
+  font-weight: 800;
+  text-decoration: none;
+  object-fit: cover;
+  border: none;
+  cursor: pointer;
+}
+.nav__avatar:hover { color: var(--paper); }
+
+.nav__toggle { display: none; }
+
+/* Nav breakpoint: links inline once the capsule is wide enough to hold
+   them on one line, the drawer below that. navigation.js closes the drawer
+   at the same width. */
+@media (min-width: 1000px) {
+  [data-desktop-nav] { display: flex; }
+  .nav__toggle { display: none; }
+}
+
+/* Between the drawer breakpoint and a comfortable desktop width the capsule
+   is tight: the phone number collapses to its icon and the links close up. */
+@media (min-width: 1000px) and (max-width: 1179px) {
+  .nav__inner { gap: var(--s-3); }
+  .nav__links { gap: 0; }
+  .nav__link { padding: 7px 9px; }
+  .nav__phone span { display: none; }
+  .nav .nav__phone { padding: 9px; }
+}
+
+@media (max-width: 999px) {
+  .nav__toggle { display: inline-flex; }
+  /* Two class-level selectors: `.nav__phone` later in this file sets its
+     own display, and a bare attribute selector would lose that tie. */
+  .nav [data-desktop-only] { display: none; }
+  /* Logo, Enquire and the menu button must fit a 320px screen side by side. */
+  .nav__inner { gap: var(--s-3); }
+  .nav__actions { gap: var(--s-2); }
+}
+
+/* Mobile drawer: the capsule unfolds into a full ink sheet. */
+.nav__drawer {
+  position: fixed;
+  inset: var(--nav-h) 0 0 0;
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--s-5);
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+  overflow-y: auto;
+  z-index: 99;
+}
+.nav__drawer.is-open { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.nav__drawer .nav__link {
+  display: block;
+  padding: var(--s-4) var(--s-2);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  border-bottom: 1px solid rgba(255,255,255,.14);
+  border-radius: 0;
+}
+.nav__drawer .nav__link:hover { background: transparent; color: var(--gold); }
+.nav__drawer .nav__link.is-active { background: transparent; color: var(--gold); }
+.nav__drawer .nav__link.is-active::before { content: "■ "; font-size: .6em; vertical-align: .2em; }
+.nav__drawer .btn--ghost { --btn-fg: var(--paper); --btn-bd: rgba(255,255,255,.35); }
+
+/* --------------------------------------------------------------------------
+   Footer — ink, with the flag drawn across the top edge.
+   -------------------------------------------------------------------------- */
+
+.footer {
+  --hard: var(--gold);
+  position: relative;
+  margin-top: auto;
+  background: var(--ink);
+  color: #B5B2AA;
+  padding-block: var(--s-7) var(--s-5);
+  font-size: var(--t-sm);
+}
+.footer::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 5px;
+  background: var(--flag-rule);
+}
+.footer h4 { color: var(--paper); font-size: var(--t-xs); font-family: var(--font-sans); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; margin-bottom: var(--s-4); }
+.footer a { color: #B5B2AA; text-decoration: none; display: block; padding: 4px 0; overflow-wrap: anywhere; transition: color var(--dur-fast) var(--ease); }
+.footer a:hover { color: var(--gold); }
+
+/* The big line above the columns: the promise, set in display type. */
+.footer__statement {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  max-width: 16ch;
+  margin-bottom: var(--s-6);
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  text-wrap: balance;
+}
+.footer__statement em { font-style: normal; color: var(--gold); }
+
+/* Phone: the two link lists sit side by side; the brand block and the
+   contact block (long email) each take a full row. Every column is
+   minmax(0, …) so nothing inside can widen the page. */
+.footer__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6) var(--s-5); }
+.footer__grid > :first-child,
+.footer__grid > :last-child { grid-column: 1 / -1; }
+
+/* Tablet: brand on its own row, the three lists beneath it. */
+@media (min-width: 640px) {
+  .footer__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); }
+  .footer__grid > :last-child { grid-column: auto; }
+}
+
+/* Desktop: one row. Contact is widest so the email stays on one line at
+   1024px; the brand paragraph is capped by its own max-width anyway. */
+@media (min-width: 960px) {
+  .footer__grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.6fr); }
+  .footer__grid > :first-child { grid-column: auto; }
+}
+.footer__bar {
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  font-size: var(--t-xs);
+  letter-spacing: .04em;
+}
+.footer__bar .de { color: var(--paper); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   Forms
+   -------------------------------------------------------------------------- */
+
+.field { position: relative; display: flex; flex-direction: column; gap: 6px; }
+.field + .field { margin-top: var(--s-4); }
+
+.field__label { font-size: var(--t-xs); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+
+.field__input,
+.field__select {
+  width: 100%;
+  padding: 0.8em 0.95em;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--t-base);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.field__input:hover, .field__select:hover { border-color: var(--ink-3); }
+.field__input:focus, .field__select:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--gold);
+}
+.field__input--area { resize: vertical; min-height: 110px; line-height: 1.6; }
+.field__input::placeholder { color: var(--ink-4); }
+
+.field__select {
+  appearance: none;
+  padding-right: 2.4em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%230F0F12' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1em center;
+}
+
+.field__help { font-size: var(--t-xs); color: var(--ink-3); }
+.field__error { font-size: var(--t-xs); color: var(--red); font-weight: 700; }
+.field--invalid .field__input { border-color: var(--red); }
+
+.field__check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+.field__checkbox {
+  width: 19px; height: 19px;
+  margin-top: 3px;
+  accent-color: var(--red);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.form-errors {
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  background: var(--red-wash);
+  color: var(--red);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  border-left: 3px solid var(--red);
+}
+
+/* Filter toolbar */
+.filters {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+}
+.filters .field__input, .filters .field__select { padding: 0.6em 0.9em; font-size: var(--t-sm); border-radius: var(--r-sm); }
+.filters__search { flex: 1 1 220px; min-width: 180px; }
+
+.chip-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-decoration: none;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--dur-fast) var(--ease);
+}
+.chip:hover { border-color: var(--ink); color: var(--ink); }
+.chip.is-active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+/* Touch screens: a finger needs more than a 31px target, hover effects
+   must not stick after a tap, and iOS zooms the page when a focused field
+   is set smaller than 16px. */
+@media (pointer: coarse) {
+  .btn--sm { min-height: 40px; padding-inline: 1.1em; }
+  .chip { min-height: 40px; }
+  .nav__link { padding-block: 10px; }
+  .filters .field__select { font-size: 1rem; }
+}
+@media (hover: none) {
+  .btn:hover { transform: none; box-shadow: none; }
+  a.card:hover, .card--hover:hover { transform: none; box-shadow: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Messages / toasts
+   -------------------------------------------------------------------------- */
+
+.toasts {
+  position: fixed;
+  top: calc(var(--nav-h) + var(--s-3));
+  right: var(--s-5);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  max-width: min(380px, calc(100vw - 2 * var(--s-5)));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r);
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  border-left: 4px solid var(--ink);
+  font-size: var(--t-sm);
+  animation: toast-in var(--dur-slow) var(--ease-out);
+}
+.toast--success { border-left-color: var(--green); }
+.toast--error   { border-left-color: var(--red); }
+.toast--warning { border-left-color: var(--gold); }
+.toast__close { background: none; border: 0; cursor: pointer; color: var(--ink-4); padding: 0 2px; margin-left: auto; }
+.toast__close:hover { color: var(--ink); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Empty states & loaders
+   -------------------------------------------------------------------------- */
+
+.empty {
+  text-align: center;
+  padding: var(--s-8) var(--s-5);
+  color: var(--ink-3);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface-sunk);
+}
+.empty h3 { color: var(--ink-2); margin-bottom: var(--s-2); }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-2) 25%, var(--surface) 50%, var(--paper-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--r-sm);
+  min-height: 1em;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.loader {
+  display: grid;
+  place-items: center;
+  gap: var(--s-3);
+  padding: var(--s-7);
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Breadcrumbs & pagination
+   -------------------------------------------------------------------------- */
+
+.crumbs { display: flex; gap: 7px; flex-wrap: wrap; font-size: var(--t-xs); font-weight: 600; color: var(--ink-3); margin-bottom: var(--s-4); }
+.crumbs a { color: var(--ink-3); text-decoration: none; }
+.crumbs a:hover { color: var(--red); }
+.crumbs li + li::before { content: "→"; margin-right: 7px; color: var(--ink-4); }
+.crumbs ol, .crumbs { list-style: none; padding: 0; }
+.crumbs ol { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.pager { display: flex; gap: var(--s-2); justify-content: center; align-items: center; margin-top: var(--s-6); }
+.pager__link {
+  min-width: 38px;
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+.pager__link:hover { border-color: var(--ink); color: var(--ink); }
+.pager__link.is-current { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+/* --------------------------------------------------------------------------
+   Icons
+   -------------------------------------------------------------------------- */
+
+.icon { display: inline-block; vertical-align: -0.15em; flex-shrink: 0; }
+.icon--stroke { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ==========================================================================
+   Marketing-site components
+   ========================================================================== */
+
+/* --- Nav extras --------------------------------------------------------- */
+
+.nav__phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+  border: 1px solid rgba(255,255,255,.22);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.nav__phone:hover { color: var(--gold); border-color: var(--gold); }
+
+/* --- Tick lists --------------------------------------------------------- */
+
+.tick-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s-4);
+  display: grid;
+  gap: var(--s-3);
+}
+.tick-list li {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.tick-list svg { color: var(--red); flex-shrink: 0; margin-top: 3px; }
+
+.topic-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s-3);
+  display: grid;
+  gap: 7px;
+}
+.topic-list li {
+  position: relative;
+  padding-left: var(--s-5);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+.topic-list li::before {
+  content: "";
+  position: absolute;
+  left: 3px; top: .6em;
+  width: 7px; height: 7px;
+  background: var(--gold);
+}
+
+/* --- Fact card (course + teacher sidebar) ------------------------------- */
+
+.fact-card {
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+  box-shadow: 6px 6px 0 var(--paper-2);
+}
+
+.fact-card__price {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.fact-card__price-note {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: 6px;
+}
+
+.fact-list { display: grid; gap: 0; margin-block: var(--s-5); border-top: 1px solid var(--line); }
+.fact-list > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-sm);
+}
+.fact-list dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.fact-list dt svg { color: var(--ink-4); }
+.fact-list dd { margin: 0; font-weight: 700; text-align: right; }
+
+.card__kicker {
+  font-size: var(--t-xs);
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- FAQ ---------------------------------------------------------------- */
+
+.faq { border-top: 1px solid var(--line-strong); }
+.faq__item { border-bottom: 1px solid var(--line-strong); }
+.faq__q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-5) 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q:hover { color: var(--red); }
+.faq__icon {
+  width: 30px; height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  flex-shrink: 0;
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.faq__item[open] > .faq__q .faq__icon { transform: rotate(45deg); background: var(--ink); color: var(--paper); }
+.faq__a { padding-bottom: var(--s-5); color: var(--ink-2); max-width: 70ch; }
+.faq__a p { margin-bottom: var(--s-3); }
+.faq__a p:last-child { margin-bottom: 0; }
+
+/* --- Honeypot: off-screen, never focusable, invisible to people --------- */
+
+.hp-wrap {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.hp-field { display: none !important; }
+
+/* --- Tables ------------------------------------------------------------- */
+
+.table-wrap {
+  /* Positioned, so absolutely placed children (the visually hidden column
+     header) are clipped by this scroll area instead of widening the page. */
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid var(--ink);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  margin-top: var(--s-5);
+}
+.price-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); min-width: 620px; }
+.price-table th, .price-table td {
+  padding: var(--s-4);
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.price-table thead th {
+  font-size: 0.7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  font-weight: 800;
+}
+.price-table tbody tr:last-child td,
+.price-table tbody tr:last-child th { border-bottom: 0; }
+.price-table tbody tr:hover { background: var(--paper); }
+.price-table tbody th { font-weight: 700; }
+.price-table tbody th a { text-decoration: none; color: var(--ink); }
+.price-table tbody th a:hover { color: var(--red); }
+.price-table td strong { font-family: var(--font-display); font-size: var(--t-md); font-weight: 800; }
+
+/* --------------------------------------------------------------------------
+   Brand lockup
+
+   The artwork is a raster with its white field knocked out. Only the height
+   is set, so the intrinsic ratio does the rest and it can never be squashed
+   by a stray width.
+   -------------------------------------------------------------------------- */
+
+.logo {
+  display: block;
+  height: 52px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* Mark beside type, for the navigation bar. */
+.logo--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: auto;
+}
+
+.logo__mark { display: block; height: 36px; width: auto; flex-shrink: 0; }
+
+.logo__word {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--brand-ink);
+  white-space: nowrap;
+}
+.logo__g { color: var(--brand-red); }
+.logo__o { color: var(--brand-gold); }
+
+.logo--footer { height: 64px; }
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  margin-right: auto;
+}
+
+@media (max-width: 520px) {
+  .logo__mark { height: 30px; }
+  .logo__word { font-size: 1.1rem; }
+  .logo--footer { height: 52px; }
+}
+
+/* --------------------------------------------------------------------------
+   Opening curtain
+
+   Two fabric panels — red and gold, after the flag — draw apart to reveal
+   the page. The fabric is a repeating gradient of pleats; because the panel
+   is scaled horizontally rather than just slid, those pleats compress as it
+   opens, which is how a real curtain gathers against its edge.
+
+   Everything animates `transform` and `opacity` only, so it runs on the
+   compositor. `animation-fill-mode: both` leaves the panels gathered away,
+   so the curtain finishes open even if JavaScript never runs.
+   -------------------------------------------------------------------------- */
+
+.curtain { display: none; }
+
+:root[data-curtain="on"] .curtain {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  /* Hard guarantee that the overlay leaves: a gathered panel is still a
+     fixed element sitting over the page, and `scaleX` never reaches zero. */
+  animation: curtain-done 1ms linear 1700ms forwards;
+}
+
+/* Blocks clicks only while the fabric is actually across the screen. */
+:root[data-curtain="on"] .curtain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  animation: curtain-release 1ms linear 700ms forwards;
+}
+
+.curtain__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 53vw;              /* the pair overlaps, so no seam at rest */
+  will-change: transform;
+  /* Two fold patterns at different periods. A single repeating gradient
+     reads as corrugation; overlaying a wider, softer one breaks up the
+     rhythm so it looks like cloth. Still one paint, then composited. */
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, .34) 0px,
+      rgba(0, 0, 0, .05) 13px,
+      rgba(255, 255, 255, .18) 25px,
+      rgba(0, 0, 0, .05) 37px,
+      rgba(0, 0, 0, .34) 50px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, .16) 0px,
+      rgba(255, 255, 255, .07) 61px,
+      rgba(0, 0, 0, .16) 127px
+    ),
+    /* A little shading top and bottom, as fabric hangs and pools. */
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, .34) 0%,
+      rgba(0, 0, 0, 0) 16%,
+      rgba(0, 0, 0, 0) 78%,
+      rgba(0, 0, 0, .22) 100%
+    );
+  animation: var(--curtain-anim) 1150ms cubic-bezier(.62, .02, .26, 1) 160ms both;
+}
+
+.curtain__panel--left {
+  left: 0;
+  background-color: #A81C17;              /* deep flag red */
+  transform-origin: left center;
+  --curtain-anim: curtain-draw-left;
+  box-shadow: inset -40px 0 50px -24px rgba(0, 0, 0, .55);
+}
+
+.curtain__panel--right {
+  right: 0;
+  background-color: #D99A12;              /* flag gold */
+  transform-origin: right center;
+  --curtain-anim: curtain-draw-right;
+  animation-delay: 260ms;                  /* a beat behind, as real pairs are */
+  box-shadow: inset 40px 0 50px -24px rgba(0, 0, 0, .45);
+}
+
+/* A braided trim down the leading edge of each panel. */
+.curtain__panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      var(--trim) 0 9px,
+      rgba(0, 0, 0, .28) 9px 14px
+    );
+  box-shadow: 0 0 18px rgba(0, 0, 0, .35);
+}
+.curtain__panel--left::after  { right: 0; --trim: #F5B821; }
+.curtain__panel--right::after { left: 0;  --trim: #E63329; }
+
+/* The pelmet across the top, in the flag's third colour. It lifts away last. */
+.curtain__pelmet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background: linear-gradient(180deg, #0F0F12 0%, #1F1F25 62%, #0A0A0D 100%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .4);
+  transform-origin: top center;
+  animation: curtain-pelmet 600ms cubic-bezier(.55, 0, .3, 1) 980ms both;
+}
+.curtain__pelmet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, #F5B821 0 14px, #E63329 14px 28px);
+  opacity: .9;
+}
+
+/* Scale toward the outer edge: the panel gathers rather than merely sliding,
+   and the pleats bunch up with it. */
+@keyframes curtain-draw-left {
+  0%   { transform: scaleX(1); opacity: 1; }
+  78%  { transform: scaleX(.14); opacity: 1; }
+  100% { transform: scaleX(.02); opacity: 0; }
+}
+@keyframes curtain-draw-right {
+  0%   { transform: scaleX(1); opacity: 1; }
+  78%  { transform: scaleX(.14); opacity: 1; }
+  100% { transform: scaleX(.02); opacity: 0; }
+}
+
+@keyframes curtain-pelmet {
+  to { transform: translate3d(0, -110%, 0); opacity: 0; }
+}
+
+@keyframes curtain-release { to { pointer-events: none; visibility: hidden; } }
+
+/* Takes the whole overlay out of the page once the sequence has run. */
+@keyframes curtain-done { to { visibility: hidden; } }
+
+/* Never show it when the OS asks for less motion, even if the head script
+   did not get the chance to decide. */
+@media (prefers-reduced-motion: reduce) {
+  .curtain,
+  :root[data-curtain="on"] .curtain { display: none !important; }
+}

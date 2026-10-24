@@ -1,0 +1,22 @@
+{% comment %}Swapped in by HTMX once an enquiry saves.{% endcomment %}
+<div class="thanks" data-enquiry-success>
+  <div class="thanks__mark" aria-hidden="true">{% icon "check" 26 %}</div>
+  <h3 class="thanks__title">Danke, {{ enquiry.name|truncatechars:24 }}.</h3>
+  <p class="thanks__body">
+    Your enquiry is with us. We reply within one working day — usually the same
+    morning.
+    {% if course %}<br>We will include the next start date for <strong>{{ course.title }}</strong>.{% endif %}
+    {% if plan %}<br>We will confirm what the <strong>{{ plan.name }}</strong> plan includes.{% endif %}
+    {% if teacher %}<br>We will check <strong>{{ teacher.name }}</strong>'s availability for you.{% endif %}
+  </p>
+
+  <div class="thanks__contact">
+    <span class="small muted">In a hurry?</span>
+    <a class="btn btn--soft btn--sm" href="tel:{{ CONTACT.phone|cut:' ' }}">
+      {% icon "phone" 14 %} {{ CONTACT.phone }}
+    </a>
+    <a class="btn btn--soft btn--sm" href="mailto:{{ CONTACT.email }}">
+      {% icon "mail" 14 %} Email us
+    </a>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+{% comment %}Returned after a finished round. The CTA is the point.{% endcomment %}
+<div class="quiz-result">
+  <div class="quiz-result__score">
+    {{ play.score }}<span>/{{ play.total }}</span>
+  </div>
+  <h2 class="quiz-result__verdict de">{{ play.verdict }}</h2>
+
+  <p class="muted">
+    {{ play.percent }}% in {{ play.seconds }} second{{ play.seconds|pluralize }}{% if play.used_hints %},
+    with {{ play.used_hints }} hint{{ play.used_hints|pluralize }}{% endif %}.
+  </p>
+
+  <div class="quiz-result__bar">
+    <span style="width:{{ play.percent }}%"></span>
+  </div>
+
+  <p class="quiz-result__pitch">
+    {% if play.percent >= 80 %}
+      You clearly know the country. The language is the part we can help with —
+      most people at your level of curiosity are ready for A1 or A2.
+    {% elif play.percent >= 40 %}
+      A respectable score. Our A1 course spends its first weeks on exactly this
+      kind of thing: places, directions and getting around.
+    {% else %}
+      Nobody is born knowing where Düsseldorf is. Our A1 course starts from
+      zero, and so did almost everyone in it.
+    {% endif %}
+  </p>
+
+  <div class="quiz-result__actions">
+    <a class="btn btn--primary" href="{% url 'leads:enquiry' %}">Talk to us about a course</a>
+    <button type="button" class="btn btn--soft" data-quiz-action="again">
+      {% icon "refresh" 15 %} Play again
+    </button>
+  </div>
+
+  {% if courses %}
+    <div class="quiz-result__courses">
+      {% for course in courses %}
+        <a href="{{ course.get_absolute_url }}">
+          <strong>{{ course.title }}</strong>
+          <span>{% if course.price %}{{ course.price|money:course.currency }}{% else %}On request{% endif %}</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

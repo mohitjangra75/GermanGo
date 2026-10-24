@@ -1,0 +1,9 @@
+{% comment %}One bound form field with the design-system classes.{% endcomment %}
+<div class="field {% if field.errors %}field--invalid{% endif %}">
+  <label class="field__label" for="{{ field.id_for_label }}">
+    {{ field.label }}{% if not field.field.required %} <span class="muted">(optional)</span>{% endif %}
+  </label>
+  {{ field }}
+  {% if field.help_text %}<div class="field__help">{{ field.help_text }}</div>{% endif %}
+  {% for error in field.errors %}<div class="field__error">{{ error }}</div>{% endfor %}
+</div>

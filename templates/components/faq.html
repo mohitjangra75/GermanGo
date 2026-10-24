@@ -1,0 +1,11 @@
+<div class="faq" data-accordion>
+  {% for faq in faqs %}
+    <details class="faq__item">
+      <summary class="faq__q">
+        {{ faq.question }}
+        <span class="faq__icon" aria-hidden="true">{% icon "plus" 18 %}</span>
+      </summary>
+      <div class="faq__a">{{ faq.answer|linebreaks }}</div>
+    </details>
+  {% endfor %}
+</div>

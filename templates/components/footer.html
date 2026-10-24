@@ -1,0 +1,48 @@
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer__statement">Learn German. <em>Speak with confidence.</em></p>
+
+    <div class="footer__grid">
+      <div>
+        <a href="{% url 'core:home' %}" aria-label="GermanGo — home">
+          {% include "components/logo.html" with on_dark=True css_class="logo--footer" %}
+        </a>
+        <p style="margin-top:var(--s-4);max-width:32ch">
+          A German language school for adults in India. Small batches, one-to-one
+          tuition and Goethe exam preparation — live online.
+        </p>
+      </div>
+
+      <nav aria-label="Courses">
+        <h4>Courses</h4>
+        <a href="{% url 'courses:list' %}?level=A1">German A1</a>
+        <a href="{% url 'courses:list' %}?level=A2">German A2</a>
+        <a href="{% url 'courses:list' %}?level=B1">German B1</a>
+        <a href="{% url 'courses:list' %}?level=B2">German B2</a>
+        <a href="{% url 'courses:list' %}">All courses</a>
+      </nav>
+
+      <nav aria-label="School">
+        <h4>School</h4>
+        <a href="{% url 'pricing:index' %}">Pricing</a>
+        <a href="{% url 'teachers:list' %}">Your teacher</a>
+        <a href="{% url 'core:process' %}">How it works</a>
+        <a href="{% url 'games:map_quiz' %}">Germany map quiz</a>
+        <a href="{% url 'leads:enquiry' %}">Enquire</a>
+      </nav>
+
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:{{ CONTACT.email }}">{{ CONTACT.email }}</a>
+        <a href="tel:{{ CONTACT.phone|cut:' ' }}">{{ CONTACT.phone }}</a>
+        {% if CONTACT.address %}<p style="margin-top:var(--s-3)">{{ CONTACT.address }}</p>{% endif %}
+        <p class="small" style="color:#8C877F;margin-top:var(--s-3)">{{ CONTACT.hours }}</p>
+      </div>
+    </div>
+
+    <div class="footer__bar">
+      <span>&copy; {% now "Y" %} {{ SITE_NAME }}.</span>
+      <span class="de">Wir freuen uns auf Sie.</span>
+    </div>
+  </div>
+</footer>

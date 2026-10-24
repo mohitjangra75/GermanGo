@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>Courses</li></ol>
+    </nav>
+    <span class="eyebrow">Courses</span>
+    <h1 class="page-head__title">German courses from A1 to B2</h1>
+    <p class="lede">
+      Four levels plus Goethe and telc exam preparation, all live online in
+      small batches. Every course lists its fee, IST schedule and next start date.
+    </p>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <form class="filters"
+          hx-get="{% url 'courses:list' %}"
+          hx-target="#course-results"
+          hx-swap="innerHTML"
+          hx-trigger="change"
+          hx-push-url="true"
+          hx-indicator="#course-loading">
+      <select class="field__select" name="level" aria-label="Level">
+        <option value="">All levels</option>
+        {% for code in levels %}
+          <option value="{{ code }}" {% if filters.level == code %}selected{% endif %}>{{ code }}</option>
+        {% endfor %}
+      </select>
+
+      <select class="field__select" name="format" aria-label="Format">
+        <option value="">Any format</option>
+        {% for value, label in formats %}
+          <option value="{{ value }}" {% if filters.format == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <select class="field__select" name="delivery" aria-label="Online or in person">
+        <option value="">Online or in person</option>
+        {% for value, label in deliveries %}
+          <option value="{{ value }}" {% if filters.delivery == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <span id="course-loading" class="htmx-indicator spinner" aria-hidden="true"></span>
+      <noscript><button type="submit" class="btn btn--soft btn--sm">Filter</button></noscript>
+    </form>
+
+    <div id="course-results" style="margin-top:var(--s-6)">
+      {% include "courses/partials/course_grid.html" %}
+    </div>
+  </div>
+</section>
+
+{% if testimonials %}
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <h2>What students say</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for item in testimonials %}
+        {% include "components/testimonial.html" with item=item %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if opportunities %}
+<section class="section">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <span class="eyebrow" style="justify-content:center">Why German</span>
+      <h2>Where these courses lead</h2>
+    </div>
+    <div class="opp-grid">
+      {% for item in opportunities %}
+        <div class="opp-card" style="--accent: {{ item.accent_color }}">
+          <span class="opp-card__icon">{% icon item.icon 22 %}</span>
+          <div>
+            <h3 class="opp-card__title">{{ item.title }}</h3>
+            <p class="opp-card__body">{{ item.description }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if faqs %}
+<section class="section">
+  <div class="wrap wrap--narrow">
+    <div class="section__head"><h2>Course questions</h2></div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+
+<div class="wrap">
+  {% enquiry_block heading="Not sure which level you are?" blurb="Most people aren't. A fifteen-minute chat settles it, and there is no obligation afterwards." %}
+</div>
+{% endblock %}

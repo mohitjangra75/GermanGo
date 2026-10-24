@@ -1,0 +1,47 @@
+{% comment %}
+  The sitewide conversion block. Drop it anywhere with:
+    {% enquiry_block heading="…" blurb="…" course=course %}
+  The wrapping id is what HTMX swaps, so several blocks can coexist.
+{% endcomment %}
+<section class="enquiry {% if compact %}enquiry--compact{% endif %}"
+         id="enquiry-{{ form_id }}-section"
+         aria-labelledby="enquiry-heading-{{ form_id }}">
+  <div class="enquiry__inner">
+    <div class="enquiry__pitch">
+      <span class="eyebrow">Get started</span>
+      <h2 class="enquiry__heading" id="enquiry-heading-{{ form_id }}">{{ heading }}</h2>
+      <p class="enquiry__blurb">{{ blurb }}</p>
+
+      <ul class="enquiry__points">
+        <li>{% icon "check-circle" 17 %} A free 15-minute placement chat</li>
+        <li>{% icon "check-circle" 17 %} A course and teacher matched to your goal</li>
+        <li>{% icon "check-circle" 17 %} Clear pricing, no enrolment fee</li>
+      </ul>
+
+      <div class="enquiry__direct">
+        <a href="tel:{{ CONTACT.phone|cut:' ' }}">{% icon "phone" 15 %} {{ CONTACT.phone }}</a>
+        <a href="mailto:{{ CONTACT.email }}">{% icon "mail" 15 %} {{ CONTACT.email }}</a>
+      </div>
+    </div>
+
+    <div class="enquiry__form-card">
+      {% if course %}
+        <p class="pill pill--red" style="margin-bottom:var(--s-4)">
+          About: {{ course.title }}
+        </p>
+      {% elif plan %}
+        <p class="pill pill--red" style="margin-bottom:var(--s-4)">
+          About: the {{ plan.name }} plan
+        </p>
+      {% elif teacher %}
+        <p class="pill pill--red" style="margin-bottom:var(--s-4)">
+          About: lessons with {{ teacher.name }}
+        </p>
+      {% endif %}
+
+      <div id="enquiry-{{ form_id }}">
+        {% include "leads/partials/form.html" %}
+      </div>
+    </div>
+  </div>
+</section>

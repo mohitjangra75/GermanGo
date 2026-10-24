@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>Pricing</li></ol>
+    </nav>
+    <span class="eyebrow">Pricing</span>
+    <h1 class="page-head__title">Published fees, no admission charge</h1>
+    <p class="lede">
+      What you see here is what you pay, in rupees. Course materials are
+      included, and you can pay in two instalments on any course longer than
+      eight weeks.
+    </p>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="wrap">
+    {% if plans %}
+      <div class="plan-grid">
+        {% for plan in plans %}
+          {% include "components/plan_card.html" with plan=plan %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <h3>No plans published yet</h3>
+        <p>Add pricing plans in the Django admin and they will appear here.</p>
+      </div>
+    {% endif %}
+
+    <div class="price-note">
+      {% icon "shield" 20 %}
+      <div>
+        <strong>No hidden extras.</strong>
+        Materials, placement assessment and a certificate at the end of the
+        course are all included. Fees are non-refundable; if a course is not
+        right for you, tell us within the first two sessions and we will move
+        you to a batch that fits better.
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if courses %}
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head section__head--split">
+      <div>
+        <h2>Course prices</h2>
+      </div>
+      <div class="section__aside">
+        <p class="lede">Each course has a fixed total price for the whole block.</p>
+        <a class="btn btn--soft" href="{% url 'courses:list' %}">All courses {% icon "arrow-right" 15 %}</a>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th scope="col">Course</th>
+            <th scope="col">Level</th>
+            <th scope="col">Format</th>
+            <th scope="col">Length</th>
+            <th scope="col">Hours</th>
+            <th scope="col">Price</th>
+            <th scope="col"><span class="visually-hidden">Enquire</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in courses %}
+            <tr>
+              <th scope="row"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></th>
+              <td><span class="pill pill--level">{{ course.level_code }}</span></td>
+              <td>{{ course.get_course_format_display }}</td>
+              <td>{{ course.duration_weeks }} wks</td>
+              <td>{{ course.total_hours|floatformat:"-1" }}</td>
+              <td><strong>{% if course.price %}{{ course.price|money:course.currency }}{% else %}On request{% endif %}</strong></td>
+              <td>
+                <a class="btn btn--soft btn--sm" href="{% url 'leads:enquiry' %}?course={{ course.slug }}">
+                  Enquire
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if testimonials %}
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid--2">
+      {% for item in testimonials %}
+        {% include "components/testimonial.html" with item=item %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if faqs %}
+<section class="section {% if not testimonials %}section--sunk{% endif %}">
+  <div class="wrap wrap--narrow">
+    <div class="section__head"><h2>Payment and pricing questions</h2></div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+
+<div class="wrap">
+  {% enquiry_block heading="Ask us for a quote" blurb="Corporate group, exam crash course, something unusual — send us the details and we will price it." %}
+</div>
+{% endblock %}

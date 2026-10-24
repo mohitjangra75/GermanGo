@@ -1,0 +1,27 @@
+{% load static %}{% comment %}
+  The brand lockup.
+
+  The supplied artwork is stacked — mark above wordmark — which suits a
+  square avatar but not a 68px navigation bar, where the wordmark would
+  shrink to about eight pixels. So there are two arrangements:
+
+    stacked  (default)  the supplied lockup exactly as given
+    inline              the supplied mark beside the wordmark set in type,
+                        for the navigation bar
+
+  Both use the same artwork; only the arrangement differs.
+{% endcomment %}
+{% if inline %}
+  <span class="logo logo--inline {{ css_class }}">
+    <img class="logo__mark"
+         src="{% if on_dark %}{% static 'images/logo-mark-light.png' %}{% else %}{% static 'images/logo-mark.png' %}{% endif %}"
+         alt="" width="206" height="193" decoding="async">
+    <span class="logo__word">German&nbsp;<span class="logo__g">G</span><span class="logo__o">o</span></span>
+  </span>
+{% else %}
+  <img class="logo {{ css_class }}"
+       src="{% if on_dark %}{% static 'images/logo-light.png' %}{% else %}{% static 'images/logo.png' %}{% endif %}"
+       alt="GermanGo"
+       width="289" height="246"
+       decoding="async">
+{% endif %}

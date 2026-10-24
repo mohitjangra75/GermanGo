@@ -1,0 +1,22 @@
+<a class="teacher-card" href="{{ teacher.get_absolute_url }}"
+   data-animate-scroll data-animate="up">
+  <span class="teacher-card__photo">
+    {% if teacher.photo %}
+      <img src="{{ teacher.photo.url }}" alt="" loading="lazy" decoding="async" width="88" height="88">
+    {% else %}
+      <span class="teacher-card__initials">{{ teacher.initials }}</span>
+    {% endif %}
+  </span>
+
+  <h3 class="teacher-card__name">{{ teacher.name }}</h3>
+  {% if teacher.role %}<p class="teacher-card__role">{{ teacher.role }}</p>{% endif %}
+  {% if teacher.headline %}<p class="teacher-card__headline">{{ teacher.headline|truncatewords:16 }}</p>{% endif %}
+
+  <div class="teacher-card__meta">
+    {% for level in teacher.level_list|slice:":4" %}<span class="pill">{{ level }}</span>{% endfor %}
+  </div>
+
+  <span class="teacher-card__foot small muted">
+    {% if teacher.is_native_speaker %}Native speaker · {% endif %}{{ teacher.years_experience }} yr{{ teacher.years_experience|pluralize }} teaching
+  </span>
+</a>

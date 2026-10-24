@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head" style="border-top:4px solid {{ course.accent_color }}">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{% url 'core:home' %}">Home</a></li>
+        <li><a href="{% url 'courses:list' %}">Courses</a></li>
+        <li>{{ course.title }}</li>
+      </ol>
+    </nav>
+
+    <div class="row" style="gap:6px">
+      <span class="pill pill--level">{{ course.level_code }}</span>
+      <span class="pill">{{ course.get_course_format_display }}</span>
+      <span class="pill">{{ course.get_delivery_display }}</span>
+    </div>
+
+    <h1 class="page-head__title" style="margin-top:var(--s-3)">{{ course.title }}</h1>
+    {% if course.subtitle %}<p class="lede">{{ course.subtitle }}</p>{% endif %}
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap course-layout">
+    <div class="stack-lg">
+      {% if course.description %}
+        <div>{{ course.description|linebreaks }}</div>
+      {% endif %}
+
+      {% if course.audience_list %}
+        <div>
+          <h2>Who it is for</h2>
+          <ul class="tick-list">
+            {% for line in course.audience_list %}
+              <li>{% icon "check-circle" 18 %} <span>{{ line }}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if course.outcome_list %}
+        <div>
+          <h2>What you will be able to do</h2>
+          <ul class="tick-list">
+            {% for line in course.outcome_list %}
+              <li>{% icon "check-circle" 18 %} <span>{{ line }}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if modules %}
+        <div>
+          <h2>Syllabus</h2>
+          <p class="muted small" style="margin-top:var(--s-2)">
+            What the course covers, in order.
+          </p>
+          <div class="syllabus">
+            {% for module in modules %}
+              <details class="syllabus__item" {% if forloop.first %}open{% endif %}>
+                <summary class="syllabus__head">
+                  <span>
+                    {% if module.week_range %}<span class="syllabus__weeks">{{ module.week_range }}</span>{% endif %}
+                    <strong>{{ module.title }}</strong>
+                  </span>
+                  <span class="faq__icon" aria-hidden="true">{% icon "plus" 16 %}</span>
+                </summary>
+                <div class="syllabus__body">
+                  {% if module.summary %}<p>{{ module.summary }}</p>{% endif %}
+                  {% if module.topic_list %}
+                    <ul class="topic-list">
+                      {% for topic in module.topic_list %}<li>{{ topic }}</li>{% endfor %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </details>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if course_teachers %}
+        <div>
+          <h2>Who teaches it</h2>
+          <div class="grid grid--3" style="margin-top:var(--s-4)">
+            {% for teacher in course_teachers %}
+              {% include "components/teacher_card.html" with teacher=teacher %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if testimonials %}
+        <div>
+          <h2>From this course</h2>
+          <div class="grid grid--2" style="margin-top:var(--s-4)">
+            {% for item in testimonials %}
+              {% include "components/testimonial.html" with item=item %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {# ---- Sticky facts + CTA ---- #}
+    <aside class="course-aside">
+      <div class="fact-card">
+        <div class="fact-card__price">
+          {{ course.price|money:course.currency }}
+          <span class="fact-card__price-note">total for the course</span>
+        </div>
+        {% if course.price_per_hour %}
+          <p class="small muted" style="margin-top:4px">
+            about {{ course.price_per_hour|money:course.currency }} per teaching hour
+          </p>
+        {% endif %}
+
+        <dl class="fact-list">
+          <div><dt>{% icon "calendar" 15 %} Length</dt><dd>{{ course.duration_weeks }} weeks</dd></div>
+          <div><dt>{% icon "clock" 15 %} Per week</dt><dd>{{ course.hours_per_week|floatformat:"-1" }} hours</dd></div>
+          <div><dt>{% icon "target" 15 %} Total</dt><dd>{{ course.total_hours|floatformat:"-1" }} hours</dd></div>
+          <div>
+            <dt>{% icon "users" 15 %} Class size</dt>
+            <dd>{% if course.is_one_to_one %}One to one{% else %}Max {{ course.max_class_size }}{% endif %}</dd>
+          </div>
+          <div><dt>{% icon "laptop" 15 %} Delivery</dt><dd>{{ course.get_delivery_display }}</dd></div>
+          {% if course.schedule_note %}
+            <div><dt>{% icon "chat" 15 %} Schedule</dt><dd>{{ course.schedule_note }}</dd></div>
+          {% endif %}
+          {% if course.next_start_date %}
+            <div><dt>{% icon "sparkle" 15 %} Next start</dt><dd>{{ course.next_start_date|date:"j F Y" }}</dd></div>
+          {% endif %}
+        </dl>
+
+        <a class="btn btn--primary btn--block btn--lg" href="#enquiry-course-{{ course.pk }}-section">
+          Enquire about this course
+        </a>
+        <a class="btn btn--soft btn--block" style="margin-top:var(--s-3)"
+           href="tel:{{ CONTACT.phone|cut:' ' }}">
+          {% icon "phone" 15 %} {{ CONTACT.phone }}
+        </a>
+      </div>
+
+      {% if plans %}
+        <div class="card card--sunk">
+          <div class="card__kicker">Plans that cover this course</div>
+          <div class="stack" style="gap:var(--s-2);margin-top:var(--s-3)">
+            {% for plan in plans %}
+              <a class="btn btn--soft btn--sm btn--block" href="{% url 'pricing:index' %}">
+                {{ plan.name }} — {{ plan.price|money:plan.currency }} {{ plan.get_period_display }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+
+<div class="wrap">
+  {% enquiry_block course=course heading="Ask us about this course" blurb="Dates, level check, payment in instalments — whatever you need to know before deciding." %}
+</div>
+
+{% if related %}
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head"><h2>Other courses</h2></div>
+    <div class="grid grid--3">
+      {% for item in related %}
+        {% include "components/course_card.html" with course=item %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

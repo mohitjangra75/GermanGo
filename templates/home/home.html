@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{# ---------------------------------------------------------------- Hero #}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__content">
+    <span class="eyebrow" data-animate="fade">German language school · A1 to B2</span>
+
+    <h1 class="hero__title" id="hero-title">
+      <span data-animate="up" data-animate-delay="0.05">Learn German.</span>
+      <span class="is-accent" data-animate="up" data-animate-delay="0.14">Speak with Confidence.</span>
+    </h1>
+
+    <p class="hero__lede" data-animate="up" data-animate-delay="0.24">
+      Live online batches from A1 to B2, plus Goethe and telc preparation,
+      on IST timings. Tell us your level and we will find the right class.
+    </p>
+
+    <div class="hero__actions" data-animate="up" data-animate-delay="0.32">
+      <a class="btn btn--primary btn--lg" href="{% url 'leads:enquiry' %}">
+        Talk to us {% icon "arrow-right" 17 %}
+      </a>
+      <a class="btn btn--ghost btn--lg" href="{% url 'courses:list' %}">See courses &amp; prices</a>
+    </div>
+
+    <div class="hero__proof" data-animate="fade" data-animate-delay="0.45">
+      {% for stat in stats|slice:":3" %}
+        <div class="hero__proof-item">
+          <strong>{{ stat.value }}</strong>
+          <span>{{ stat.label }}</span>
+        </div>
+      {% empty %}
+        <div class="hero__proof-item"><strong>A1–C2</strong><span>Every level</span></div>
+        <div class="hero__proof-item"><strong>Max 8</strong><span>Per group</span></div>
+        <div class="hero__proof-item"><strong>1 day</strong><span>Reply time</span></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Decorative 3D scene. Words come from the admin, never hard-coded. #}
+  <div class="hero__scene"
+       data-hero-scene
+       data-hero-parallax
+       data-words='[{% for w in hero_words %}{"word":"{{ w.word|escapejs }}","display":"{{ w.display_word|escapejs }}","translation":"{{ w.translation|escapejs }}","example":"{{ w.example_de|escapejs }}","exampleEn":"{{ w.example_en|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'
+       role="img"
+       aria-label="A stylised 3D German town with floating German words">
+
+    <div class="scene-loader" data-scene-loader>
+      <div class="scene-loader__bar"></div>
+    </div>
+
+    <div class="scene-card" data-scene-card>
+      <div class="scene-card__word de" data-card-word></div>
+      <div class="scene-card__translation" data-card-translation></div>
+      <div class="scene-card__example de" data-card-example-wrap>
+        <span data-card-example></span>
+        <div class="scene-card__example-en" data-card-example-en></div>
+      </div>
+    </div>
+
+    <div class="hero__fallback" data-scene-fallback hidden>
+      <div class="word-cloud">
+        {% for w in hero_words %}
+          <span class="word-cloud__item de" title="{{ w.translation }}">{{ w.display_word }}</span>
+        {% empty %}
+          <span class="word-cloud__item de">Hallo</span>
+          <span class="word-cloud__item de">Danke</span>
+          <span class="word-cloud__item de">Guten Morgen</span>
+          <span class="word-cloud__item de">der Bahnhof</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <span class="scene-hint">Click a word</span>
+  </div>
+</section>
+
+{# --------------------------------------------------------- Trust strip #}
+{% if trust_points %}
+<section class="trust-strip">
+  <div class="wrap">
+    <ul class="trust-strip__list">
+      {% for point in trust_points %}
+        <li class="trust-strip__item">
+          <span class="trust-strip__icon">{% icon point.icon 20 %}</span>
+          <span>
+            <span class="trust-strip__title">{{ point.title }}</span>
+            {% if point.description %}<span class="trust-strip__desc">{{ point.description }}</span>{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- Courses #}
+<section class="section" aria-labelledby="courses-title">
+  <div class="wrap">
+    <div class="section__head section__head--split">
+      <div>
+        <span class="eyebrow">Courses</span>
+        <h2 id="courses-title">Find the course that fits your level</h2>
+      </div>
+      <div class="section__aside">
+        <p class="lede">
+          Every course states its price, class size, schedule and next start
+          date up front. No enrolment fee.
+        </p>
+        <a class="btn btn--soft" href="{% url 'courses:list' %}">All courses {% icon "arrow-right" 15 %}</a>
+      </div>
+    </div>
+
+    <div class="grid grid--3">
+      {% for course in featured_courses %}
+        {% include "components/course_card.html" with course=course %}
+      {% empty %}
+        <div class="empty">
+          <h3>No courses published yet</h3>
+          <p>Add one in the Django admin and it will appear here.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ------------------------------------------------------------- Process #}
+{% if steps %}
+<section class="section section--sunk" aria-labelledby="process-title">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <span class="eyebrow" style="justify-content:center">How it works</span>
+      <h2 id="process-title">From enquiry to first lesson in a week</h2>
+      <p class="lede" style="margin-inline:auto">
+        No entrance exam, no long forms. A short conversation is enough for us
+        to place you correctly.
+      </p>
+    </div>
+
+    {# A rail joins the markers and draws itself step by step; see animations.js #}
+    <ol class="journey" data-journey style="--journey-count:{{ steps|length }}">
+      {% for step in steps %}
+        <li class="journey__step" data-journey-step>
+          <div class="journey__marker">
+            {% icon step.icon 20 %}
+            <span class="journey__num">{{ step.number }}</span>
+          </div>
+          <span class="journey__spark" aria-hidden="true"></span>
+          <div class="journey__card">
+            <h3 class="journey__title">{{ step.title }}</h3>
+            <p class="journey__body">{{ step.body }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+
+    <p style="margin-top:var(--s-5);text-align:center">
+      <a class="btn btn--ghost" href="{% url 'core:process' %}">
+        Read the detail {% icon "arrow-right" 15 %}
+      </a>
+    </p>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------ Teachers #}
+{% if teachers %}
+<section class="section" aria-labelledby="teachers-title">
+  <div class="wrap">
+    <div class="section__head section__head--split">
+      <div>
+        <span class="eyebrow">Your teacher</span>
+        <h2 id="teachers-title">You will know exactly who is teaching you</h2>
+      </div>
+      <div class="section__aside">
+        <p class="lede">
+          Every batch is taught by the same person, from the first session to
+          the last. Read her profile before you commit to anything.
+        </p>
+        {% if teachers|length > 1 %}
+          <a class="btn btn--soft" href="{% url 'teachers:list' %}">Meet the teachers {% icon "arrow-right" 15 %}</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if teachers|length == 1 %}
+      {# One teacher: a full-width profile panel instead of a lone card. #}
+      {% with teacher=teachers.0 %}
+      <article class="teacher-feature" data-animate-scroll data-animate="up">
+        {% comment %}With a photo, it fills the whole panel and the details sit
+        over its foot as a caption. Without one, the initials tile on the dot
+        grid.{% endcomment %}
+        <div class="teacher-feature__side {% if teacher.photo %}teacher-feature__side--photo{% endif %}">
+          {% if teacher.photo %}
+            <img class="teacher-feature__cover" src="{{ teacher.photo.url }}" alt="{{ teacher.name }}"
+                 loading="lazy" decoding="async" width="900" height="1125">
+          {% else %}
+            <span class="teacher-feature__photo">
+              <span class="teacher-feature__initials">{{ teacher.initials }}</span>
+            </span>
+          {% endif %}
+          <div class="teacher-feature__meta">
+            {% if teacher.is_accepting_students %}
+              <span class="teacher-feature__badge">{% icon "check-circle" 14 %} Taking new students</span>
+            {% endif %}
+            {% if teacher.home_city %}
+              <span class="teacher-feature__place">{% icon "pin" 12 %} {{ teacher.home_city }}</span>
+            {% endif %}
+            {% if teacher.level_list %}
+              <div class="teacher-feature__levels">
+                {% for level in teacher.level_list %}<span class="pill pill--level">{{ level }}</span>{% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="teacher-feature__main">
+          <div>
+            {% if teacher.role %}<p class="teacher-feature__role">{{ teacher.role }}</p>{% endif %}
+            <h3 class="teacher-feature__name">{{ teacher.name }}</h3>
+          </div>
+          {% if teacher.headline %}<p class="teacher-feature__headline">{{ teacher.headline }}</p>{% endif %}
+          {% if teacher.bio %}<p class="teacher-feature__bio">{{ teacher.bio|truncatewords:45 }}</p>{% endif %}
+
+          <div class="teacher-feature__facts">
+            <div class="teacher-feature__fact">
+              <strong>{{ teacher.years_experience }}</strong>
+              <span>year{{ teacher.years_experience|pluralize }} teaching</span>
+            </div>
+            {% if teacher.level_list %}
+              <div class="teacher-feature__fact">
+                <strong>{{ teacher.level_list|first }}–{{ teacher.level_list|last }}</strong>
+                <span>Levels taught</span>
+              </div>
+            {% endif %}
+            {% if teacher.language_list %}
+              <div class="teacher-feature__fact">
+                <strong>{{ teacher.language_list|length }}</strong>
+                <span>{{ teacher.languages }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if teacher.specialism_list or teacher.qualification_list %}
+            <ul class="teacher-feature__specialisms">
+              {% for item in teacher.qualification_list %}
+                <li>{% icon "medal" 15 %} <strong>{{ item }}</strong></li>
+              {% endfor %}
+              {% for item in teacher.specialism_list %}
+                <li>{% icon "check" 15 %} {{ item }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <div class="teacher-feature__actions">
+            <a class="btn btn--primary" href="{{ teacher.get_absolute_url }}">
+              Read her full profile {% icon "arrow-right" 15 %}
+            </a>
+            <a class="btn btn--ghost" href="{% url 'leads:enquiry' %}">Book a free placement chat</a>
+          </div>
+        </div>
+      </article>
+      {% endwith %}
+    {% else %}
+      <div class="grid grid--4" data-stagger>
+        {% for teacher in teachers %}
+          {% include "components/teacher_card.html" with teacher=teacher %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# --------------------------------------------------------- Opportunities #}
+{% if opportunities %}
+<section class="section section--sunk" aria-labelledby="opps-title">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <span class="eyebrow" style="justify-content:center">Why German</span>
+      <h2 id="opps-title">Opportunities after learning German</h2>
+      <p class="lede" style="margin-inline:auto">
+        The certificate is the beginning, not the point. Here is what it
+        actually opens up.
+      </p>
+    </div>
+
+    <div class="opp-grid" data-stagger="0.07">
+      {% for item in opportunities %}
+        <div class="opp-card" style="--accent: {{ item.accent_color }}">
+          <span class="opp-card__icon">{% icon item.icon 22 %}</span>
+          <div>
+            <h3 class="opp-card__title">{{ item.title }}</h3>
+            <p class="opp-card__body">{{ item.description }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ----------------------------------------------------------- Map teaser #}
+{% if map_cities %}
+<section class="section map-teaser-section" aria-labelledby="map-title">
+  <div class="wrap map-teaser">
+    <div class="map-teaser__copy">
+      <span class="eyebrow">Free game</span>
+      <h2 id="map-title">Do you know where Leipzig is?</h2>
+      <p class="lede">
+        Spin the map, click the cities, find out. It takes two minutes and it
+        is the kind of thing that makes a country feel less abstract before
+        you start learning its language.
+      </p>
+
+      <div class="map-teaser__stats">
+        <div><strong>{{ map_cities|length }}</strong><span>cities</span></div>
+        <div><strong>~2 min</strong><span>per round</span></div>
+        <div><strong>Free</strong><span>no sign-up</span></div>
+      </div>
+
+      <div class="row" style="margin-top:var(--s-6)">
+        <a class="btn btn--primary btn--lg" href="{% url 'games:map_quiz' %}">
+          {% icon "globe" 17 %} Play the map quiz
+        </a>
+      </div>
+    </div>
+
+    <div class="map-stage map-stage--teaser"
+         data-germany-map
+         data-mode="teaser"
+         data-cities='[{% for city in map_cities %}{"slug":"{{ city.slug|escapejs }}","name":"{{ city.name|escapejs }}","state":"{{ city.state|escapejs }}","x":{{ city.x }},"z":{{ city.z }},"color":"{{ city.color|escapejs }}","difficulty":{{ city.difficulty }}}{% if not forloop.last %},{% endif %}{% endfor %}]'
+         role="img"
+         aria-label="A 3D map of Germany with its major cities marked">
+      <div class="scene-loader" data-map-loader>
+        <div class="scene-loader__bar"></div>
+      </div>
+      <div class="map-fallback" data-map-fallback hidden>
+        <div class="map-fallback__inner">
+          <div class="word-cloud">
+            {% for city in map_cities|slice:":6" %}
+              <span class="word-cloud__item">{% icon "pin" 13 %} {{ city.name }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <span class="scene-hint">Drag to turn · click a city</span>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- Pricing #}
+{% if plans %}
+<section class="section section--sunk" aria-labelledby="pricing-title">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <span class="eyebrow" style="justify-content:center">Pricing</span>
+      <h2 id="pricing-title">Simple, published prices</h2>
+      <p class="lede" style="margin-inline:auto">
+        Pick the shape of teaching that suits you. Everything is listed — there
+        is no enrolment fee and no material charge.
+      </p>
+    </div>
+
+    <div class="plan-grid">
+      {% for plan in plans %}
+        {% include "components/plan_card.html" with plan=plan %}
+      {% endfor %}
+    </div>
+
+    <p style="margin-top:var(--s-5);text-align:center">
+      <a class="btn btn--ghost" href="{% url 'pricing:index' %}">
+        Full pricing and what's included {% icon "arrow-right" 15 %}
+      </a>
+    </p>
+  </div>
+</section>
+{% endif %}
+
+{# -------------------------------------------------------- Social proof #}
+{% if stats or testimonials %}
+<section class="section section--ink" aria-labelledby="proof-title">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="proof-title">Students and results</h2>
+
+    {% if stats %}
+      <div class="stat-band">
+        {% for stat in stats %}
+          <div>
+            <div class="stat__value">{{ stat.value }}</div>
+            <div class="stat__label">{{ stat.label }}</div>
+            {% if stat.caption %}<div class="stat__caption">{{ stat.caption }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if testimonials %}
+      <div class="grid grid--3" style="margin-top:var(--s-6)" data-stagger>
+        {% for item in testimonials %}
+          {% include "components/testimonial.html" with item=item %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# ----------------------------------------------------------------- FAQ #}
+{% if faqs %}
+<section class="section" aria-labelledby="faq-title">
+  <div class="wrap wrap--narrow">
+    <div class="section__head">
+      <span class="eyebrow">Questions</span>
+      <h2 id="faq-title">Before you enquire</h2>
+    </div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+
+{# ------------------------------------------------------------- Enquiry #}
+<div class="wrap">
+  {% enquiry_block heading="Tell us where you are and we'll do the rest" blurb="A short message is enough. We will reply with a course, a teacher and a start date that fit." %}
+</div>
+
+{% endblock %}

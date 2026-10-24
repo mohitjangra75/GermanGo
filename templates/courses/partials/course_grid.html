@@ -1,0 +1,19 @@
+<p class="small muted" style="margin-bottom:var(--s-4)">
+  {{ total }} course{{ total|pluralize }}{% if filters.level %} at {{ filters.level }}{% endif %}
+</p>
+
+{% if courses %}
+  <div class="grid grid--3">
+    {% for course in courses %}
+      {% include "components/course_card.html" with course=course %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">
+    <h3>No courses match those filters</h3>
+    <p>
+      Clear a filter, or <a href="{% url 'leads:enquiry' %}">tell us what you need</a> —
+      we open new groups regularly.
+    </p>
+  </div>
+{% endif %}

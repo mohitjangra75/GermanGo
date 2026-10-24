@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap wrap--narrow" style="text-align:center;padding-block:var(--s-6)">
+    <div class="thanks__mark" style="margin-inline:auto" aria-hidden="true">{% icon "check" 30 %}</div>
+    <h1 style="font-size:var(--t-2xl);margin-top:var(--s-5)">Thank you — that's with us</h1>
+    <p class="lede" style="margin:var(--s-4) auto 0">
+      We reply within one working day, usually the same morning. If it is
+      urgent, call us and we will pick it up straight away.
+    </p>
+
+    <div class="row" style="justify-content:center;margin-top:var(--s-6)">
+      <a class="btn btn--primary" href="tel:{{ CONTACT.phone|cut:' ' }}">
+        {% icon "phone" 16 %} {{ CONTACT.phone }}
+      </a>
+      <a class="btn btn--ghost" href="{% url 'courses:list' %}">Browse the courses meanwhile</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

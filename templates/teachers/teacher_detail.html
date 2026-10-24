@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap course-layout course-layout--profile">
+    <div>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="{% url 'core:home' %}">Home</a></li>
+          <li><a href="{% url 'teachers:list' %}">Teachers</a></li>
+          <li>{{ teacher.name }}</li>
+        </ol>
+      </nav>
+
+      <div class="teacher-hero">
+        <span class="teacher-hero__photo">
+          {% if teacher.photo %}
+            <img src="{{ teacher.photo.url }}" alt="{{ teacher.name }}" width="128" height="128">
+          {% else %}
+            <span class="teacher-card__initials" style="font-size:2rem">{{ teacher.initials }}</span>
+          {% endif %}
+        </span>
+        <div>
+          <h1 style="font-size:var(--t-2xl)">{{ teacher.name }}</h1>
+          {% if teacher.role %}<p class="lede" style="margin-top:4px">{{ teacher.role }}</p>{% endif %}
+          <div class="row" style="margin-top:var(--s-4);gap:6px">
+            {% if teacher.is_native_speaker %}<span class="pill pill--green">Native speaker</span>{% endif %}
+            <span class="pill">{{ teacher.years_experience }} yr{{ teacher.years_experience|pluralize }} experience</span>
+            {% if teacher.home_city %}<span class="pill">{% icon "pin" 12 %} {{ teacher.home_city }}</span>{% endif %}
+            {% if not teacher.is_accepting_students %}
+              <span class="pill pill--yellow">Waiting list</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% if teacher.headline %}
+        <p class="lede" style="margin-top:var(--s-6)">{{ teacher.headline }}</p>
+      {% endif %}
+
+      {% if teacher.bio %}
+        <div class="stack" style="margin-top:var(--s-5)">{{ teacher.bio|linebreaks }}</div>
+      {% endif %}
+
+      {% if teacher.specialism_list %}
+        <h2 style="margin-top:var(--s-6)">Specialisms</h2>
+        <ul class="tick-list">
+          {% for item in teacher.specialism_list %}
+            <li>{% icon "check-circle" 18 %} <span>{{ item }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if teacher.qualification_list %}
+        <h2 style="margin-top:var(--s-6)">Qualifications</h2>
+        <ul class="tick-list">
+          {% for item in teacher.qualification_list %}
+            <li>{% icon "medal" 18 %} <span>{{ item }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if teacher_courses %}
+        <h2 style="margin-top:var(--s-6)">Courses {{ teacher.name.split.0 }} teaches</h2>
+        <div class="grid grid--2" style="margin-top:var(--s-4)">
+          {% for course in teacher_courses %}
+            {% include "components/course_card.html" with course=course %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="course-aside">
+      <div class="fact-card">
+        <div class="card__kicker">At a glance</div>
+        <dl class="fact-list" style="margin-top:var(--s-3)">
+          {% if teacher.level_list %}
+            <div>
+              <dt>{% icon "target" 15 %} Levels</dt>
+              <dd>{{ teacher.level_list|join:", " }}</dd>
+            </div>
+          {% endif %}
+          {% if teacher.language_list %}
+            <div>
+              <dt>{% icon "globe" 15 %} Speaks</dt>
+              <dd>{{ teacher.language_list|join:", " }}</dd>
+            </div>
+          {% endif %}
+          <div>
+            <dt>{% icon "user" 15 %} Availability</dt>
+            <dd>{% if teacher.is_accepting_students %}Taking new students{% else %}Waiting list{% endif %}</dd>
+          </div>
+        </dl>
+
+        <a class="btn btn--primary btn--block btn--lg" style="margin-top:var(--s-5)"
+           href="#enquiry-teacher-{{ teacher.pk }}-section">
+          Request {{ teacher.name.split.0 }}
+        </a>
+      </div>
+
+      {% if colleagues %}
+        <div class="card card--sunk">
+          <div class="card__kicker">Other teachers</div>
+          <div class="stack" style="gap:var(--s-2);margin-top:var(--s-3)">
+            {% for colleague in colleagues %}
+              <a class="small" href="{{ colleague.get_absolute_url }}">{{ colleague.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+
+<div class="wrap">
+  {% enquiry_block teacher=teacher heading="Ask for lessons with "|add:teacher.name blurb="We will check availability and come back with times that work for both of you." %}
+</div>
+{% endblock %}

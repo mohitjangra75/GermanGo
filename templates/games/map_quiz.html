@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>Map quiz</li></ol>
+    </nav>
+    <span class="eyebrow">Free game</span>
+    <h1 class="page-head__title">How well do you know Germany?</h1>
+    <p class="lede">
+      Eight cities, one 3D map, about two minutes. Useful if you are thinking
+      of moving there — and a decent excuse to learn a few place names.
+    </p>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="wrap quiz-layout"
+       data-map-quiz
+       data-result-url="{% url 'games:map_quiz_result' %}"
+       data-round-length="{{ round_length }}">
+
+    {# ---- The 3D map ---- #}
+    <div class="map-stage"
+         data-germany-map
+         data-mode="quiz"
+         data-cities='[{% for city in city_data %}{"slug":"{{ city.slug|escapejs }}","name":"{{ city.name|escapejs }}","state":"{{ city.state|escapejs }}","x":{{ city.x }},"z":{{ city.z }},"color":"{{ city.color|escapejs }}","hint":"{{ city.hint|escapejs }}","fact":"{{ city.fact|escapejs }}","difficulty":{{ city.difficulty }}}{% if not forloop.last %},{% endif %}{% endfor %}]'
+         role="img"
+         aria-label="Interactive 3D map of Germany with unlabelled city markers">
+
+      <div class="scene-loader" data-map-loader>
+        <div class="scene-loader__bar"></div>
+      </div>
+
+      <div class="map-legend" data-map-legend>
+        <strong>Deutschland</strong>
+        <span>Click the marker you think is right</span>
+      </div>
+
+      {% comment %}Shown in place of the scene when 3D is unavailable. No
+      explanation of why — the game simply works from the list instead.{% endcomment %}
+      <div class="map-fallback" data-map-fallback hidden>
+        <div class="map-fallback__inner">
+          <span class="map-fallback__icon">{% icon "pin" 24 %}</span>
+          <p>Choose the city you think is right.</p>
+          <div class="chip-row">
+            {% for city in cities %}
+              <button type="button" class="chip" data-quiz-pick="{{ city.slug }}">{{ city.name }}</button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---- The quiz panel ---- #}
+    <div class="quiz-panel">
+
+      <div class="quiz__start" data-quiz-start>
+        <div class="quiz__start-icon">{% icon "globe" 30 %}</div>
+        <h2>Finde die Stadt</h2>
+        <p class="muted">
+          We name a German city, you point at it on the map. {{ round_length }}
+          questions, no time limit, and a hint whenever you want one.
+        </p>
+        <button type="button" class="btn btn--primary btn--lg btn--block"
+                style="margin-top:var(--s-5)" data-quiz-action="start">
+          Start the quiz {% icon "arrow-right" 16 %}
+        </button>
+        <p class="small muted" style="margin-top:var(--s-3);text-align:center">
+          No sign-up. Nothing saved about you.
+        </p>
+      </div>
+
+      <div class="quiz__play" data-quiz-play hidden>
+        <div class="quiz__hud">
+          <span class="quiz__count" data-quiz-count>1 / {{ round_length }}</span>
+          <span class="quiz__score-chip">
+            {% icon "star" 13 %} <span data-quiz-score>0</span>
+          </span>
+          <span class="quiz__timer mono" data-quiz-timer>00:00</span>
+        </div>
+        <div class="quiz__progress"><span data-quiz-progress></span></div>
+
+        <h2 class="quiz__prompt de" data-quiz-prompt aria-live="polite">Wo ist …?</h2>
+        <p class="quiz__hint" data-quiz-hint hidden></p>
+        <p class="quiz__feedback" data-quiz-feedback role="status" aria-live="polite"></p>
+
+        <div class="quiz__actions">
+          <button type="button" class="btn btn--soft btn--sm" data-quiz-hint-btn data-quiz-action="hint">
+            {% icon "sparkle" 14 %} Hint
+          </button>
+          <button type="button" class="btn btn--ghost btn--sm" data-quiz-action="skip">Skip</button>
+        </div>
+
+        <details class="quiz__list">
+          <summary>Prefer buttons to the map?</summary>
+          <div class="chip-row" style="margin-top:var(--s-3)">
+            {% for city in cities %}
+              <button type="button" class="chip" data-quiz-pick="{{ city.slug }}">{{ city.name }}</button>
+            {% endfor %}
+          </div>
+        </details>
+      </div>
+
+      <div data-quiz-result hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <span class="eyebrow" style="justify-content:center">Beyond the game</span>
+      <h2>Knowing the map is the easy part</h2>
+      <p class="lede" style="margin-inline:auto">
+        Ordering at the bakery in Hamburg is harder. That is what our courses
+        are for.
+      </p>
+    </div>
+    <div class="grid grid--3">
+      {% for course in courses %}
+        {% include "components/course_card.html" with course=course %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  {% enquiry_block heading="Ready to learn the language too?" blurb="Tell us your level and your goal. We will reply with a course, a teacher and a start date." %}
+</div>
+{% endblock %}

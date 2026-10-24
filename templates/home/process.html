@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>How it works</li></ol>
+    </nav>
+    <span class="eyebrow">How it works</span>
+    <h1 class="page-head__title">From your first message to your first lesson</h1>
+    <p class="lede">
+      There is no entrance exam and no long application. A short conversation
+      tells us more about your level than any form would.
+    </p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap wrap--narrow">
+    <ol class="process-list">
+      {% for step in steps %}
+        <li class="process-item" data-animate-scroll data-animate="up">
+          <div class="process-item__marker">
+            <span class="process-item__icon">{% icon step.icon 20 %}</span>
+            <span class="process-item__num">{{ step.number }}</span>
+          </div>
+          <div class="process-item__body">
+            <h2 class="process-item__title">{{ step.title }}</h2>
+            <p>{{ step.body }}</p>
+            {% if step.detail %}<div class="process-item__detail">{{ step.detail|linebreaks }}</div>{% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <div class="empty">
+          <h3>No steps published</h3>
+          <p>Add process steps in the Django admin.</p>
+        </div>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+{% if teachers %}
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head section__head--center">
+      <h2>Who you would be learning with</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for teacher in teachers %}
+        {% include "components/teacher_card.html" with teacher=teacher %}
+      {% endfor %}
+    </div>
+    <p style="margin-top:var(--s-5);text-align:center">
+      <a class="btn btn--ghost" href="{% url 'teachers:list' %}">
+        All teachers {% icon "arrow-right" 15 %}
+      </a>
+    </p>
+  </div>
+</section>
+{% endif %}
+
+{% if faqs %}
+<section class="section">
+  <div class="wrap wrap--narrow">
+    <div class="section__head"><h2>Questions about getting started</h2></div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+
+<div class="wrap">
+  {% enquiry_block heading="Start with step one" blurb="Send us a message and we will book your free placement chat. It takes fifteen minutes." %}
+</div>
+{% endblock %}

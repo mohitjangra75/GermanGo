@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol><li><a href="{% url 'core:home' %}">Home</a></li><li>Teachers</li></ol>
+    </nav>
+    <span class="eyebrow">Your teacher</span>
+    <h1 class="page-head__title">Meet the person who will teach you</h1>
+    <p class="lede">
+      The same teacher takes your batch from the first session to the last.
+      You will know who you are learning with before you book anything.
+    </p>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <form class="filters"
+          hx-get="{% url 'teachers:list' %}"
+          hx-target="#teacher-results" hx-swap="innerHTML"
+          hx-trigger="change" hx-push-url="true">
+      <select class="field__select" name="level" aria-label="Level taught">
+        <option value="">Any level</option>
+        {% for code in levels %}
+          <option value="{{ code }}" {% if filters.level == code %}selected{% endif %}>Teaches {{ code }}</option>
+        {% endfor %}
+      </select>
+      <label class="chip" style="cursor:pointer">
+        <input type="checkbox" name="available" value="1"
+               {% if filters.available %}checked{% endif %}
+               style="accent-color:var(--red);margin-right:6px">
+        Taking new students
+      </label>
+      <noscript><button type="submit" class="btn btn--soft btn--sm">Filter</button></noscript>
+    </form>
+
+    <div id="teacher-results" style="margin-top:var(--s-6)">
+      {% include "teachers/partials/teacher_grid.html" %}
+    </div>
+  </div>
+</section>
+
+{% if faqs %}
+<section class="section section--sunk">
+  <div class="wrap wrap--narrow">
+    <div class="section__head"><h2>About our teachers</h2></div>
+    {% include "components/faq.html" with faqs=faqs %}
+  </div>
+</section>
+{% endif %}
+
+<div class="wrap">
+  {% enquiry_block heading="Want to be matched with a teacher?" blurb="Tell us your level, your goal and when you can study. We will suggest the teacher who fits." %}
+</div>
+{% endblock %}

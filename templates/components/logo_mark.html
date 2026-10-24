@@ -1,0 +1,8 @@
+{% load static %}{% comment %}
+  The mark on its own, without the wordmark — for tight spaces.
+{% endcomment %}
+<img class="logo-mark {{ css_class }}"
+     src="{% static 'images/logo-mark.png' %}"
+     alt="{% if not decorative %}GermanGo{% endif %}"
+     width="206" height="193"
+     decoding="async">

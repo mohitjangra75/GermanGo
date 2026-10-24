@@ -1,0 +1,48 @@
+<header class="nav" data-nav>
+  <div class="wrap nav__inner">
+    <a class="nav__brand" href="{% url 'core:home' %}" aria-label="GermanGo — home">
+      {% include "components/logo.html" with inline=True on_dark=True %}
+    </a>
+
+    <nav class="nav__links" aria-label="Main" data-desktop-nav>
+      <a class="nav__link {% active_nav 'courses' %}" href="{% url 'courses:list' %}">Courses</a>
+      <a class="nav__link {% active_nav 'pricing' %}" href="{% url 'pricing:index' %}">Pricing</a>
+      <a class="nav__link {% active_nav 'teachers' %}" href="{% url 'teachers:list' %}">Your teacher</a>
+      <a class="nav__link {% active_nav 'core:process' %}" href="{% url 'core:process' %}">How it works</a>
+      <a class="nav__link nav__link--game {% active_nav 'games' %}" href="{% url 'games:map_quiz' %}">
+        {% icon "globe" 14 %} Map quiz
+      </a>
+    </nav>
+
+    <div class="nav__actions">
+      <a class="nav__phone" href="tel:{{ CONTACT.phone|cut:' ' }}" data-desktop-only>
+        {% icon "phone" 15 %} <span>{{ CONTACT.phone }}</span>
+      </a>
+      <a class="btn btn--primary btn--sm" href="{% url 'leads:enquiry' %}">Enquire</a>
+
+      <button type="button" class="btn btn--ghost btn--icon nav__toggle"
+              data-nav-toggle aria-expanded="false" aria-controls="nav-drawer"
+              aria-label="Open menu">
+        {% icon "menu" 20 %}
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="nav__drawer" id="nav-drawer" data-nav-drawer>
+  <nav aria-label="Mobile">
+    <a class="nav__link {% active_nav 'courses' %}" href="{% url 'courses:list' %}">Courses</a>
+    <a class="nav__link {% active_nav 'pricing' %}" href="{% url 'pricing:index' %}">Pricing</a>
+    <a class="nav__link {% active_nav 'teachers' %}" href="{% url 'teachers:list' %}">Your teacher</a>
+    <a class="nav__link {% active_nav 'core:process' %}" href="{% url 'core:process' %}">How it works</a>
+    <a class="nav__link {% active_nav 'games' %}" href="{% url 'games:map_quiz' %}">Map quiz</a>
+    <a class="nav__link {% active_nav 'leads' %}" href="{% url 'leads:enquiry' %}">Enquire</a>
+
+    <div class="stack" style="margin-top:var(--s-6);gap:var(--s-3)">
+      <a class="btn btn--primary btn--block" href="{% url 'leads:enquiry' %}">Talk to us</a>
+      <a class="btn btn--ghost btn--block" href="tel:{{ CONTACT.phone|cut:' ' }}">
+        {% icon "phone" 15 %} {{ CONTACT.phone }}
+      </a>
+    </div>
+  </nav>
+</div>

@@ -1,0 +1,40 @@
+<a class="course-card" href="{{ course.get_absolute_url }}"
+   style="--accent: {{ course.accent_color }}"
+   data-animate-scroll data-animate="up">
+  <div class="course-card__top">
+    <span class="pill pill--level">{{ course.level_code }}</span>
+    <span class="pill">{{ course.get_course_format_display }}</span>
+    {% if course.badge %}<span class="pill pill--yellow">{{ course.badge }}</span>{% endif %}
+  </div>
+
+  <h3 class="course-card__title">{{ course.title }}</h3>
+  <p class="course-card__desc">{{ course.subtitle|default:course.description|truncatewords:18 }}</p>
+
+  {% comment %}The first three outcomes, mirroring the course posters.{% endcomment %}
+  {% if course.outcome_list %}
+    <ul class="course-card__points">
+      {% for line in course.outcome_list|slice:":3" %}
+        <li>{% icon "check" 14 %} <span>{{ line }}</span></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <dl class="course-card__specs">
+    <div><dt>Length</dt><dd>{{ course.duration_weeks }} weeks</dd></div>
+    <div><dt>Per week</dt><dd>{{ course.hours_per_week|floatformat:"-1" }} hours</dd></div>
+    <div>
+      <dt>Batch size</dt>
+      <dd>{% if course.is_one_to_one %}One to one{% else %}Max {{ course.max_class_size }}{% endif %}</dd>
+    </div>
+  </dl>
+
+  <div class="course-card__foot">
+    <span class="course-card__price">
+      {% if course.price %}{{ course.price|money:course.currency }}<small>total</small>
+      {% else %}On request{% endif %}
+    </span>
+    {% if course.next_start_date %}
+      <span class="small muted">{% icon "calendar" 13 %} Starts {{ course.next_start_date|date:"j M" }}</span>
+    {% endif %}
+  </div>
+</a>

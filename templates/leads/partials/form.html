@@ -1,0 +1,52 @@
+{% comment %}
+  The enquiry form itself. Posted over HTMX and re-rendered in place with
+  errors, or replaced by the thank-you panel on success. Works without
+  JavaScript too: the same POST falls back to a redirect.
+{% endcomment %}
+<form class="enquiry-form"
+      id="form-{{ form_id }}"
+      method="post"
+      action="{% url 'leads:submit' %}"
+      hx-post="{% url 'leads:submit' %}"
+      hx-target="#enquiry-{{ form_id }}"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button[type=submit]"
+      novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="form_id" value="{{ form_id }}">
+  <input type="hidden" name="source_path" value="{{ source_path|default:request.path }}">
+  {% if course %}<input type="hidden" name="course" value="{{ course.slug }}">{% endif %}
+  {% if plan %}<input type="hidden" name="plan" value="{{ plan.pk }}">{% endif %}
+  {% if teacher %}<input type="hidden" name="teacher" value="{{ teacher.slug }}">{% endif %}
+  {{ form.loaded_at }}
+
+  {% if throttled %}
+    <div class="form-errors" style="margin-bottom:var(--s-4)">
+      You have sent several enquiries already. Please email
+      <a href="mailto:{{ CONTACT.email }}">{{ CONTACT.email }}</a> and we will pick it up.
+    </div>
+  {% elif form.non_field_errors %}
+    <div class="form-errors" style="margin-bottom:var(--s-4)">
+      {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+    </div>
+  {% endif %}
+
+  {# Honeypot: hidden from people, irresistible to bots. #}
+  <div class="hp-wrap" aria-hidden="true">{{ form.website }}</div>
+
+  <div class="field-row">
+    {% include "components/field.html" with field=form.name %}
+    {% include "components/field.html" with field=form.phone %}
+  </div>
+  {% include "components/field.html" with field=form.email %}
+  {% include "components/field.html" with field=form.message %}
+
+  <button type="submit" class="btn btn--primary btn--lg btn--block" style="margin-top:var(--s-5)">
+    Send enquiry
+    <span class="htmx-indicator spinner" aria-hidden="true"></span>
+  </button>
+
+  <p class="small muted" style="margin-top:var(--s-3);text-align:center">
+    We reply within one working day. No newsletter, no sales calls out of the blue.
+  </p>
+</form>

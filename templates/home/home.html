@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  {# Decorative 3D scene. Words come from the admin, never hard-coded. #}
+  {# Decorative 3D scene. Words come from HERO_WORDS in core/content.py. #}
   <div class="hero__scene"
        data-hero-scene
        data-hero-parallax
@@ -115,11 +115,6 @@
     <div class="grid grid--3">
       {% for course in featured_courses %}
         {% include "components/course_card.html" with course=course %}
-      {% empty %}
-        <div class="empty">
-          <h3>No courses published yet</h3>
-          <p>Add one in the Django admin and it will appear here.</p>
-        </div>
       {% endfor %}
     </div>
   </div>
@@ -191,9 +186,9 @@
         {% comment %}With a photo, it fills the whole panel and the details sit
         over its foot as a caption. Without one, the initials tile on the dot
         grid.{% endcomment %}
-        <div class="teacher-feature__side {% if teacher.photo %}teacher-feature__side--photo{% endif %}">
-          {% if teacher.photo %}
-            <img class="teacher-feature__cover" src="{{ teacher.photo.url }}" alt="{{ teacher.name }}"
+        <div class="teacher-feature__side {% if teacher.photo_url %}teacher-feature__side--photo{% endif %}">
+          {% if teacher.photo_url %}
+            <img class="teacher-feature__cover" src="{{ teacher.photo_url }}" alt="{{ teacher.name }}"
                  loading="lazy" decoding="async" width="900" height="1125">
           {% else %}
             <span class="teacher-feature__photo">
@@ -207,9 +202,9 @@
             {% if teacher.home_city %}
               <span class="teacher-feature__place">{% icon "pin" 12 %} {{ teacher.home_city }}</span>
             {% endif %}
-            {% if teacher.level_list %}
+            {% if teacher.levels %}
               <div class="teacher-feature__levels">
-                {% for level in teacher.level_list %}<span class="pill pill--level">{{ level }}</span>{% endfor %}
+                {% for level in teacher.levels %}<span class="pill pill--level">{{ level }}</span>{% endfor %}
               </div>
             {% endif %}
           </div>
@@ -228,26 +223,26 @@
               <strong>{{ teacher.years_experience }}</strong>
               <span>year{{ teacher.years_experience|pluralize }} teaching</span>
             </div>
-            {% if teacher.level_list %}
+            {% if teacher.levels %}
               <div class="teacher-feature__fact">
-                <strong>{{ teacher.level_list|first }}–{{ teacher.level_list|last }}</strong>
+                <strong>{{ teacher.levels|first }}–{{ teacher.levels|last }}</strong>
                 <span>Levels taught</span>
               </div>
             {% endif %}
-            {% if teacher.language_list %}
+            {% if teacher.languages %}
               <div class="teacher-feature__fact">
-                <strong>{{ teacher.language_list|length }}</strong>
-                <span>{{ teacher.languages }}</span>
+                <strong>{{ teacher.languages|length }}</strong>
+                <span>{{ teacher.languages|join:", " }}</span>
               </div>
             {% endif %}
           </div>
 
-          {% if teacher.specialism_list or teacher.qualification_list %}
+          {% if teacher.specialisms or teacher.qualifications %}
             <ul class="teacher-feature__specialisms">
-              {% for item in teacher.qualification_list %}
+              {% for item in teacher.qualifications %}
                 <li>{% icon "medal" 15 %} <strong>{{ item }}</strong></li>
               {% endfor %}
-              {% for item in teacher.specialism_list %}
+              {% for item in teacher.specialisms %}
                 <li>{% icon "check" 15 %} {{ item }}</li>
               {% endfor %}
             </ul>

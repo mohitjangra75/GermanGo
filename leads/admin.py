@@ -145,7 +145,7 @@ class EnquiryAdmin(admin.ModelAdmin):
         writer.writerow(
             ["Received", "Name", "Email", "Phone", "Interest", "Status", "Message", "Source"]
         )
-        for enquiry in queryset.select_related("course", "plan", "teacher"):
+        for enquiry in queryset:
             writer.writerow(
                 [
                     enquiry.created_at.strftime("%Y-%m-%d %H:%M"),

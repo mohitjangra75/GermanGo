@@ -2,7 +2,5 @@
 Django>=5.2.18,<6.0
 django-htmx==1.29.0
 whitenoise==6.12.0
-# Required by the ImageFields on courses, teachers and testimonials.
-Pillow==13.0.0
 # Production server only (see Deployment in README.md).
 gunicorn==26.2.0

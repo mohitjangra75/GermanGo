@@ -1,36 +1,37 @@
 """Teacher directory and profiles."""
 
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import Http404
+from django.shortcuts import redirect, render
 
-from core.models import Faq
+from core.content import FAQS
 from core.seo import breadcrumb_schema, build_seo, faq_schema
+from courses.models import CEFR_LEVELS, Course
 from leads.forms import EnquiryForm
 
-from .models import Teacher
+from .content import TEACHERS, get_teacher
 
 
 def teacher_list(request):
-    teachers = Teacher.objects.published().prefetch_related("courses")
+    teachers = TEACHERS
 
     # A one-teacher school has no directory to browse. Send visitors straight
     # to the profile, and let the page become a list again if more are added.
-    if not request.htmx and teachers.count() == 1:
-        return redirect(teachers.first(), permanent=False)
-
+    if not request.htmx and len(teachers) == 1:
+        return redirect(teachers[0].get_absolute_url(), permanent=False)
 
     level = request.GET.get("level", "").strip().upper()
     if level:
-        teachers = teachers.filter(levels_taught__icontains=level)
+        teachers = [teacher for teacher in teachers if level in teacher.levels]
 
     if request.GET.get("available") == "1":
-        teachers = teachers.filter(is_accepting_students=True)
+        teachers = [teacher for teacher in teachers if teacher.is_accepting_students]
 
-    faqs = list(Faq.objects.filter(is_published=True, page=Faq.Page.TEACHERS))
+    faqs = FAQS["teachers"]
     context = {
         "teachers": teachers,
-        "levels": ["A1", "A2", "B1", "B2", "C1", "C2"],
+        "levels": CEFR_LEVELS,
         "filters": {"level": level, "available": request.GET.get("available", "")},
-        "total": teachers.count(),
+        "total": len(teachers),
     }
 
     if request.htmx:
@@ -50,17 +51,21 @@ def teacher_list(request):
 
 
 def teacher_detail(request, slug):
-    teacher = get_object_or_404(
-        Teacher.objects.published().prefetch_related("courses"), slug=slug
-    )
+    teacher = get_teacher(slug)
+    if teacher is None:
+        raise Http404("No such teacher.")
+
     context = {
         "teacher": teacher,
-        "teacher_courses": teacher.courses.filter(is_published=True),
-        "colleagues": Teacher.objects.published().exclude(pk=teacher.pk)[:3],
+        "teacher_courses": [
+            course
+            for course in Course.objects.published()
+            if teacher.slug in course.teacher_slugs
+        ],
+        "colleagues": [other for other in TEACHERS if other.slug != teacher.slug][:3],
         "form": EnquiryForm(),
-        "form_id": f"teacher-{teacher.pk}",
+        "form_id": f"teacher-{teacher.slug}",
         "seo": build_seo(
-            teacher,
             title=f"{teacher.name} — German teacher",
             description=teacher.headline or teacher.bio[:160],
             og_type="profile",
@@ -71,7 +76,7 @@ def teacher_detail(request, slug):
                     "name": teacher.name,
                     "jobTitle": teacher.role or "German teacher",
                     "description": teacher.headline or teacher.bio[:200],
-                    "knowsLanguage": teacher.language_list or ["German"],
+                    "knowsLanguage": teacher.languages or ["German"],
                 },
                 breadcrumb_schema(
                     request,

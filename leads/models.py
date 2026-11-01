@@ -26,28 +26,15 @@ class Enquiry(TimeStampedModel):
     message = models.TextField(max_length=2000, blank=True)
 
     # --- Context captured automatically -----------------------------------
-    course = models.ForeignKey(
-        "courses.Course",
-        on_delete=models.SET_NULL,
+    # The title at the time of the enquiry, so the record still reads
+    # correctly if the course or plan is later renamed or withdrawn.
+    course = models.CharField(
+        max_length=200,
         blank=True,
-        null=True,
-        related_name="enquiries",
         help_text="Set when the form was submitted from a course page.",
     )
-    plan = models.ForeignKey(
-        "pricing.Plan",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="enquiries",
-    )
-    teacher = models.ForeignKey(
-        "teachers.Teacher",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="enquiries",
-    )
+    plan = models.CharField(max_length=200, blank=True)
+    teacher = models.CharField(max_length=200, blank=True)
     source_path = models.CharField(
         max_length=300, blank=True, help_text="The page the enquiry came from."
     )
@@ -79,11 +66,11 @@ class Enquiry(TimeStampedModel):
     def interest(self) -> str:
         """A short label for what the lead asked about."""
         if self.course:
-            return f"Course: {self.course.title}"
+            return f"Course: {self.course}"
         if self.plan:
-            return f"Plan: {self.plan.name}"
+            return f"Plan: {self.plan}"
         if self.teacher:
-            return f"Teacher: {self.teacher.name}"
+            return f"Teacher: {self.teacher}"
         return "General enquiry"
 
     def mark_contacted(self) -> None:

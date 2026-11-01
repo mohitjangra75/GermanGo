@@ -63,19 +63,6 @@ def money(amount, currency="INR") -> str:
 
 
 @register.filter
-def file_url(fieldfile) -> str:
-    """The URL of a FileField, or "" when no file is attached.
-
-    ``{{ obj.photo.url }}`` raises on an empty FileField and ``default``
-    cannot help, because the exception happens before the filter runs.
-    """
-    try:
-        return fieldfile.url if fieldfile else ""
-    except (ValueError, AttributeError):
-        return ""
-
-
-@register.filter
 def split_lines(value: str) -> list[str]:
     return [line.strip() for line in (value or "").splitlines() if line.strip()]
 
@@ -124,11 +111,11 @@ def enquiry_block(context, heading="", blurb="", course=None, plan=None, teacher
     request = context.get("request")
     key = "generic"
     if course is not None:
-        key = f"course-{course.pk}"
+        key = f"course-{course.slug}"
     elif plan is not None:
-        key = f"plan-{plan.pk}"
+        key = f"plan-{plan.slug}"
     elif teacher is not None:
-        key = f"teacher-{teacher.pk}"
+        key = f"teacher-{teacher.slug}"
 
     return {
         "form": context.get("form") if context.get("form_id") == key else EnquiryForm(),

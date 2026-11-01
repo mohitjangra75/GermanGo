@@ -9,20 +9,19 @@ from django.urls import reverse
 
 from courses.models import Course
 from leads.models import Enquiry
-from pricing.models import Plan
-from teachers.models import Teacher
+from pricing.content import PLANS
+from teachers.content import TEACHERS
 
 HTMX = {"HTTP_HX_REQUEST": "true"}
 
 
 class EnquiryTestCase(TestCase):
+    teacher = TEACHERS[0]
+    plan = PLANS[0]
+
     @classmethod
     def setUpTestData(cls):
-        cls.course = Course.objects.create(
-            title="German A1 — Evening Group", level_code="A1", price=390
-        )
-        cls.teacher = Teacher.objects.create(name="Anna Weber")
-        cls.plan = Plan.objects.create(name="Evening Group", price=130)
+        cls.course = Course.objects.published().first()
 
     def setUp(self):
         cache.clear()
@@ -115,32 +114,35 @@ class ContextTests(EnquiryTestCase):
     def test_a_course_enquiry_is_attributed(self):
         self.post(course=self.course.slug)
         enquiry = Enquiry.objects.get()
-        self.assertEqual(enquiry.course, self.course)
+        self.assertEqual(enquiry.course, self.course.title)
         self.assertIn(self.course.title, enquiry.interest)
 
     def test_a_teacher_enquiry_is_attributed(self):
         self.post(teacher=self.teacher.slug)
-        self.assertEqual(Enquiry.objects.get().teacher, self.teacher)
+        self.assertEqual(Enquiry.objects.get().teacher, self.teacher.name)
 
     def test_a_plan_enquiry_is_attributed(self):
-        self.post(plan=str(self.plan.pk))
-        self.assertEqual(Enquiry.objects.get().plan, self.plan)
+        self.post(plan=self.plan.slug)
+        self.assertEqual(Enquiry.objects.get().plan, self.plan.name)
+
+    def test_an_unpublished_course_is_not_attached(self):
+        Course.objects.filter(pk=self.course.pk).update(is_published=False)
+        self.post(course=self.course.slug)
+        self.assertEqual(Enquiry.objects.get().course, "")
 
     def test_an_unknown_course_is_ignored_rather_than_failing(self):
         response = self.post(course="no-such-course")
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(Enquiry.objects.get().course)
+        self.assertEqual(Enquiry.objects.get().course, "")
 
-    def test_a_non_numeric_plan_id_is_ignored(self):
+    def test_an_unknown_plan_is_ignored(self):
         response = self.post(plan="../../etc/passwd")
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(Enquiry.objects.get().plan)
+        self.assertEqual(Enquiry.objects.get().plan, "")
 
-    def test_an_unpublished_course_is_not_attached(self):
-        self.course.is_published = False
-        self.course.save()
-        self.post(course=self.course.slug)
-        self.assertIsNone(Enquiry.objects.get().course)
+    def test_the_pricing_buttons_carry_the_plan(self):
+        response = self.client.get(reverse("pricing:index"))
+        self.assertContains(response, f"?plan={self.plan.slug}")
 
     def test_the_thank_you_names_the_course(self):
         response = self.post(course=self.course.slug)

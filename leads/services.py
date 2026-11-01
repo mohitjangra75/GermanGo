@@ -37,9 +37,9 @@ def is_rate_limited(request) -> bool:
 
 def attach_context(enquiry, request, course=None, plan=None, teacher=None):
     """Record where the enquiry came from, so the school can follow up well."""
-    enquiry.course = course
-    enquiry.plan = plan
-    enquiry.teacher = teacher
+    enquiry.course = course.title if course else ""
+    enquiry.plan = plan.name if plan else ""
+    enquiry.teacher = teacher.name if teacher else ""
     enquiry.source_path = (request.POST.get("source_path") or request.path)[:300]
     enquiry.referrer = request.META.get("HTTP_REFERER", "")[:300]
     return enquiry

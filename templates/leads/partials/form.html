@@ -16,7 +16,7 @@
   <input type="hidden" name="form_id" value="{{ form_id }}">
   <input type="hidden" name="source_path" value="{{ source_path|default:request.path }}">
   {% if course %}<input type="hidden" name="course" value="{{ course.slug }}">{% endif %}
-  {% if plan %}<input type="hidden" name="plan" value="{{ plan.pk }}">{% endif %}
+  {% if plan %}<input type="hidden" name="plan" value="{{ plan.slug }}">{% endif %}
   {% if teacher %}<input type="hidden" name="teacher" value="{{ teacher.slug }}">{% endif %}
   {{ form.loaded_at }}
 

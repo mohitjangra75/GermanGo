@@ -18,18 +18,11 @@
 
 <section class="section section--tight">
   <div class="wrap">
-    {% if plans %}
-      <div class="plan-grid">
-        {% for plan in plans %}
-          {% include "components/plan_card.html" with plan=plan %}
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="empty">
-        <h3>No plans published yet</h3>
-        <p>Add pricing plans in the Django admin and they will appear here.</p>
-      </div>
-    {% endif %}
+    <div class="plan-grid">
+      {% for plan in plans %}
+        {% include "components/plan_card.html" with plan=plan %}
+      {% endfor %}
+    </div>
 
     <div class="price-note">
       {% icon "shield" 20 %}

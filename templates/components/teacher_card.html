@@ -1,8 +1,8 @@
 <a class="teacher-card" href="{{ teacher.get_absolute_url }}"
    data-animate-scroll data-animate="up">
   <span class="teacher-card__photo">
-    {% if teacher.photo %}
-      <img src="{{ teacher.photo.url }}" alt="" loading="lazy" decoding="async" width="88" height="88">
+    {% if teacher.photo_url %}
+      <img src="{{ teacher.photo_url }}" alt="" loading="lazy" decoding="async" width="88" height="88">
     {% else %}
       <span class="teacher-card__initials">{{ teacher.initials }}</span>
     {% endif %}
@@ -13,7 +13,7 @@
   {% if teacher.headline %}<p class="teacher-card__headline">{{ teacher.headline|truncatewords:16 }}</p>{% endif %}
 
   <div class="teacher-card__meta">
-    {% for level in teacher.level_list|slice:":4" %}<span class="pill">{{ level }}</span>{% endfor %}
+    {% for level in teacher.levels|slice:":4" %}<span class="pill">{{ level }}</span>{% endfor %}
   </div>
 
   <span class="teacher-card__foot small muted">

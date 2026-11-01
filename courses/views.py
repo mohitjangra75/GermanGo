@@ -2,15 +2,16 @@
 
 from django.shortcuts import get_object_or_404, render
 
-from core.models import Faq, Highlight, Testimonial
+from core.content import FAQS, OPPORTUNITIES, TESTIMONIALS
 from core.seo import breadcrumb_schema, build_seo, course_schema, faq_schema
 from leads.forms import EnquiryForm
+from pricing.content import plans_covering
 
 from .models import CEFR_LEVELS, Course
 
 
 def course_list(request):
-    courses = Course.objects.published().prefetch_related("teachers")
+    courses = Course.objects.published()
 
     level = request.GET.get("level", "").strip().upper()
     if level in CEFR_LEVELS:
@@ -37,12 +38,10 @@ def course_list(request):
     if request.htmx:
         return render(request, "courses/partials/course_grid.html", context)
 
-    faqs = list(Faq.objects.filter(is_published=True, page=Faq.Page.COURSES))
+    faqs = FAQS["courses"]
     context["faqs"] = faqs
-    context["testimonials"] = Testimonial.objects.filter(is_published=True)[:3]
-    context["opportunities"] = Highlight.objects.filter(
-        is_published=True, section=Highlight.Section.OPPORTUNITY
-    )
+    context["testimonials"] = TESTIMONIALS[:3]
+    context["opportunities"] = OPPORTUNITIES
     context["seo"] = build_seo(
         title="German course fees and batches — A1 to B2",
         description="Small-batch, one-to-one and intensive German courses at every "
@@ -56,29 +55,20 @@ def course_list(request):
 
 
 def course_detail(request, slug):
-    course = get_object_or_404(
-        Course.objects.published().prefetch_related("modules", "teachers", "plans"),
-        slug=slug,
-    )
-    related = (
-        Course.objects.published()
-        .exclude(pk=course.pk)
-        .filter(level_code=course.level_code)[:3]
-    )
-    if not related:
-        related = Course.objects.published().exclude(pk=course.pk)[:3]
+    course = get_object_or_404(Course.objects.published(), slug=slug)
+    others = Course.objects.published().exclude(pk=course.pk)
+    related = others.filter(level_code=course.level_code)[:3] or others[:3]
 
     context = {
         "course": course,
         "modules": course.modules.all(),
-        "course_teachers": course.teachers.filter(is_published=True),
-        "plans": course.plans.filter(is_published=True),
+        "course_teachers": course.teachers,
+        "plans": plans_covering(course),
         "related": related,
-        "testimonials": course.testimonials.filter(is_published=True)[:2],
+        "testimonials": [t for t in TESTIMONIALS if t.course == course.slug][:2],
         "form": EnquiryForm(),
-        "form_id": f"course-{course.pk}",
+        "form_id": f"course-{course.slug}",
         "seo": build_seo(
-            course,
             title=f"{course.title} — German {course.level_code}",
             description=course.subtitle or course.description[:160],
             structured_data=[

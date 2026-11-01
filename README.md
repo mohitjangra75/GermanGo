@@ -21,8 +21,7 @@ python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 
 python manage.py migrate
-python manage.py seed_content     # realistic courses, teachers, prices, copy
-python manage.py createsuperuser
+python manage.py createsuperuser  # for courses and enquiries in the admin
 python manage.py runserver
 ```
 
@@ -47,7 +46,7 @@ no `.env` and nothing to configure to get started.
 | `/how-it-works/` | The four steps from enquiry to first lesson |
 | `/game/germany-map/` | The 3D Germany map quiz |
 | `/enquiry/` | The enquiry form on its own page |
-| `/admin/` | Where staff manage all of the above |
+| `/admin/` | Courses and the enquiry inbox |
 
 ---
 
@@ -58,16 +57,15 @@ GermanGo/
 ├── manage.py
 ├── config/            settings (one file, no env), urls, wsgi, asgi
 │
-├── core/              shared mixins, homepage, process page, SEO, sitemaps
-│   ├── models.py        Testimonial, SiteStat, ProcessStep, Faq, HeroWord
+├── core/              homepage, process page, SEO, sitemaps
+│   ├── content.py       FAQs, process steps, stats, hero words, highlights
 │   ├── seo.py           SeoData + schema.org builders
-│   ├── templatetags/    germango.py, registered as template builtins
-│   └── management/commands/seed_content.py
+│   └── templatetags/    germango.py, registered as template builtins
 │
-├── courses/           Course + CourseModule (the syllabus outline)
-├── teachers/          Teacher profiles
-├── pricing/           Plan + PlanFeature
-├── games/             MapCity + GamePlay — the Germany map quiz
+├── courses/           Course + CourseModule (the syllabus), edited in the admin
+├── teachers/content.py teacher profiles
+├── pricing/content.py the bundles and their feature lists
+├── games/content.py   map quiz cities
 ├── leads/             Enquiry, the form, spam handling, the admin inbox
 │
 ├── templates/
@@ -84,8 +82,11 @@ GermanGo/
     └── images/
 ```
 
-Nothing on the site is hard-coded in a template. Courses, teachers, plans,
-process steps, testimonials, statistics and FAQs all come from the database.
+Courses are edited in the admin. Everything else — teachers, plans,
+process steps, testimonials, statistics and FAQs — is a plain Python list in
+each app's `content.py`; templates render them and never hard-code copy. The
+database holds only the courses and the enquiries visitors send in.
+See [Editing content](#editing-content).
 
 ---
 
@@ -220,17 +221,31 @@ fragment to HTMX, or redirects to `/enquiry/thank-you/` when HTMX is absent.
 
 ---
 
+## Editing content
+
+**Courses** are edited in the admin under *Courses*: level, format, price,
+schedule, next start date, teachers and the syllabus. Changes are live as
+soon as you save. Untick *is published* to hide a course without deleting it.
+
+Everything else is in one of four files. Edit, run the tests, deploy.
+
+| File | What it holds |
+|------|---------------|
+| `teachers/content.py` | Teacher profiles; the photo is a path under `static/` |
+| `pricing/content.py` | Bundles and their feature lists |
+| `core/content.py` | Process steps, testimonials, statistics, FAQs, hero words, highlights |
+| `games/content.py` | Map quiz cities |
+
+List order is display order. A course or teacher's `slug` is its URL, so
+change the title rather than the slug. A plan names the courses it covers by
+their slug, so if you change a course's slug in the admin, change it in
+`pricing/content.py` too.
+
+---
+
 ## The admin
 
-`/admin/` is the whole back office.
-
-| Section | What staff manage |
-|---------|-------------------|
-| **Enquiries** | The inbox: status workflow, internal notes, CSV export |
-| Courses | Title, level, format, price, schedule, next start date, syllabus |
-| Teachers | Photo, bio, specialisms, qualifications, availability |
-| Pricing | Plans and their feature lists |
-| Site content | Process steps, testimonials, statistics, FAQs, hero words |
+`/admin/` holds two things: **Courses**, and the **enquiry inbox**.
 
 The enquiry inbox is built for actually working leads:
 
@@ -258,7 +273,7 @@ material agree.
 | B1 | Intermediate — complex sentences, express your opinion, feel more confident | ₹7,500 |
 | B2 | Upper intermediate — advanced grammar, fluent communication, career and study ready | ₹8,500 |
 
-**Bundles** (`Plan` records, each linked to the courses it covers):
+**Bundles** (`PLANS` in `pricing/content.py`, each listing the courses it covers):
 
 | Bundle | Fee | |
 |--------|-----|--|
@@ -270,24 +285,23 @@ material agree.
 A2 ₹7,999 · B1 ₹9,599 · B2 ₹11,599.
 
 **Opportunities after learning German** — study in Germany, better jobs,
-travel, connecting with people, a brighter future — are `Highlight` records
-shown on the homepage and the courses page. The same model drives the trust
-strip under the hero (flexible learning, expert guidance, structured
-curriculum, lifetime access), so both lists are editable in the admin rather
-than baked into a template.
+travel, connecting with people, a brighter future — are `OPPORTUNITIES` in
+`core/content.py`, shown on the homepage and the courses page. `TRUST_POINTS`
+beside it is the strip under the hero (flexible learning, expert guidance,
+structured curriculum, lifetime access).
 
 ---
 
 ## One teacher
 
 The school is one person, so `/teachers/` redirects to her profile rather
-than showing a directory of one. Add a second `Teacher` and the list view
-comes back automatically — there is a test for both halves of that.
+than showing a directory of one. Add a second `Teacher` to `TEACHERS` and
+the list view comes back automatically — there is a test for both halves of
+that.
 
-**Her profile is deliberately missing credentials.** `qualifications` is
-seeded blank and `years_experience` is left at its default, because
-inventing certificates for a named, real person would put a false claim on a
-live site. Fill those in from the admin. The seeded bio and specialisms only
+**Her profile carries only the credentials she supplied** — C1 certification
+and five years' experience. Inventing certificates for a named, real person
+would put a false claim on a live site. The bio and specialisms only
 describe what the published catalogue already commits to.
 
 For the same reason:
@@ -295,11 +309,11 @@ For the same reason:
 - **The homepage statistics are structural facts** — levels taught, batch
   size, fee floor, reply time. The earlier placeholders ("2,400+ students
   taught", "94% exam pass rate") were invented and are gone. Add real
-  figures in the admin once there are real figures.
-- **The example testimonials are seeded unpublished.** They are written
-  samples under invented names; publishing them as real student feedback
-  would be misleading. Replace the text with genuine quotes, then tick
-  *is published*.
+  figures to `STATS` once there are real figures.
+- **Testimonials are genuine quotes only.** `TESTIMONIALS` in
+  `core/content.py` feeds the homepage, the courses page and the pricing
+  page; setting `course` also shows a quote on that course's page. Invented
+  quotes under invented names would be misleading.
 
 ---
 
@@ -309,15 +323,14 @@ For the same reason:
 a 3D map of Germany. Eight questions, hints on request, and a result card
 that turns a good score into a course recommendation and a CTA.
 
-- **Cities are managed in the admin** — name, normalised map coordinates, a
-  hint, a fun fact and a difficulty. Easy cities are asked first so the
-  opening question is winnable.
+- **Cities are listed in `games/content.py`** — name, normalised map
+  coordinates, a hint, a fun fact and a difficulty. Easy cities are asked
+  first so the opening question is winnable.
 - **It works without WebGL.** The same round can be played from a list of
   city buttons, which also makes it keyboard- and screen-reader-accessible.
-- **Rounds are recorded anonymously** in `GamePlay` — score, duration, hints
-  used, nothing personal. The admin changelist header shows how many people
-  play and how they do, so you can judge whether it earns its place.
-- **Scores are clamped server-side**, so a tampered request cannot record 999
+- **Nothing about a round is saved.** The score is posted only to build the
+  result card, and the page promises "Nothing saved about you".
+- **Scores are clamped server-side**, so a tampered request cannot show 999
   out of 8.
 
 The same `germany-map.js` module runs in `teaser` mode on the homepage, with
@@ -392,7 +405,6 @@ targets on small screens.
 ## SEO
 
 - Canonical URLs, Open Graph and Twitter tags on every page.
-- Per-object `seo_title`, `seo_description`, `og_image` and `noindex`.
 - JSON-LD: `EducationalOrganization`, `Course` with `offers`, `Person`,
   `FAQPage`, `BreadcrumbList`.
 - `/sitemap.xml` covering every page, course and teacher.
@@ -403,18 +415,20 @@ targets on small screens.
 ## Testing
 
 ```bash
-python manage.py test          # 83 tests
+python manage.py test          # 96 tests
 python manage.py test leads    # the enquiry path on its own
 python manage.py test games    # the map quiz
 ```
 
-Covered: every page renders, unpublished content 404s, every page offers a way
-to enquire, the filters return fragments rather than whole documents, course
-and teacher attribution, all four spam defences, rate limiting, the no-JS
-fallback path, Indian rupee grouping, fee and duration arithmetic, slug
-collisions, quiz scoring and server-side clamping of tampered scores, every
-admin changelist and add form, the CSV export and bulk actions, and that
-seeding twice does not duplicate anything.
+Covered: every page renders, unknown slugs 404, every page offers a way to
+enquire, the filters return fragments rather than whole documents, course,
+plan and teacher attribution, all four spam defences, rate limiting, the
+no-JS fallback path, Indian rupee grouping, fee and duration arithmetic,
+quiz scoring and server-side clamping of tampered scores (and that a round
+saves nothing), every admin changelist and add form, adding a course with its
+syllabus in the admin, the CSV export and bulk actions, and that the content
+holds together — unique slugs, and no plan or testimonial pointing at a
+course that does not exist.
 
 The Three.js scenes are additionally checked two ways: every geometry builder
 is executed against Three.js in Node with a triangle-budget assertion, and
@@ -456,18 +470,3 @@ Two things to set before launch:
 
 SQLite is fine for a brochure site with a form. If enquiry volume grows enough
 to matter, switch `DATABASES` to PostgreSQL — nothing else needs changing.
-
----
-
-## Management commands
-
-```bash
-python manage.py seed_content           # idempotent: safe to re-run
-python manage.py seed_content --fresh   # wipe seeded content first
-```
-
-Seeds the real catalogue — four level courses and four Goethe/telc
-exam-preparation courses with full syllabuses, three bundles, one teacher,
-twelve map-quiz cities, five "opportunities", four trust points, four
-process steps, twenty FAQs and the homepage statistics. Every fee matches
-the course posters. Example testimonials are seeded unpublished.

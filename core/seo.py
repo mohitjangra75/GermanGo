@@ -53,20 +53,9 @@ class SeoData:
         return mark_safe(json.dumps(payload, ensure_ascii=False))
 
 
-def build_seo(obj=None, **overrides) -> SeoData:
-    """Build page metadata, preferring per-object admin overrides."""
-    data = SeoData(**overrides)
-    if obj is not None:
-        data.title = getattr(obj, "seo_title", "") or data.title
-        data.description = getattr(obj, "seo_description", "") or data.description
-        data.noindex = bool(getattr(obj, "noindex", False)) or data.noindex
-        image = getattr(obj, "og_image", None)
-        if image:
-            try:
-                data.og_image = image.url
-            except ValueError:
-                pass
-    return data
+def build_seo(**fields) -> SeoData:
+    """Build page metadata; anything left out falls back to the site default."""
+    return SeoData(**fields)
 
 
 def course_schema(course) -> dict:
@@ -74,7 +63,7 @@ def course_schema(course) -> dict:
         "@context": "https://schema.org",
         "@type": "Course",
         "name": course.title,
-        "description": course.seo_description or course.subtitle or course.description[:200],
+        "description": course.subtitle or course.description[:200],
         "provider": {
             "@type": "EducationalOrganization",
             "name": settings.SITE_NAME,

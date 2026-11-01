@@ -2,23 +2,22 @@
 
 from django.shortcuts import render
 
-from core.models import Faq, Testimonial
+from core.content import FAQS, TESTIMONIALS
 from core.seo import breadcrumb_schema, build_seo, faq_schema
 from courses.models import Course
 from leads.forms import EnquiryForm
 
-from .models import Plan
+from .content import PLANS
 
 
 def pricing(request):
-    plans = Plan.objects.published().prefetch_related("features", "courses")
-    faqs = list(Faq.objects.filter(is_published=True, page=Faq.Page.PRICING))
+    faqs = FAQS["pricing"]
 
     context = {
-        "plans": plans,
+        "plans": PLANS,
         "courses": Course.objects.published()[:6],
         "faqs": faqs,
-        "testimonials": Testimonial.objects.filter(is_published=True)[:2],
+        "testimonials": TESTIMONIALS[:2],
         "form": EnquiryForm(),
         "form_id": "pricing",
         "seo": build_seo(

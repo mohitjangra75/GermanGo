@@ -30,11 +30,6 @@
             {% if step.detail %}<div class="process-item__detail">{{ step.detail|linebreaks }}</div>{% endif %}
           </div>
         </li>
-      {% empty %}
-        <div class="empty">
-          <h3>No steps published</h3>
-          <p>Add process steps in the Django admin.</p>
-        </div>
       {% endfor %}
     </ol>
   </div>

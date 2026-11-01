@@ -14,8 +14,8 @@
 
       <div class="teacher-hero">
         <span class="teacher-hero__photo">
-          {% if teacher.photo %}
-            <img src="{{ teacher.photo.url }}" alt="{{ teacher.name }}" width="128" height="128">
+          {% if teacher.photo_url %}
+            <img src="{{ teacher.photo_url }}" alt="{{ teacher.name }}" width="128" height="128">
           {% else %}
             <span class="teacher-card__initials" style="font-size:2rem">{{ teacher.initials }}</span>
           {% endif %}
@@ -42,19 +42,19 @@
         <div class="stack" style="margin-top:var(--s-5)">{{ teacher.bio|linebreaks }}</div>
       {% endif %}
 
-      {% if teacher.specialism_list %}
+      {% if teacher.specialisms %}
         <h2 style="margin-top:var(--s-6)">Specialisms</h2>
         <ul class="tick-list">
-          {% for item in teacher.specialism_list %}
+          {% for item in teacher.specialisms %}
             <li>{% icon "check-circle" 18 %} <span>{{ item }}</span></li>
           {% endfor %}
         </ul>
       {% endif %}
 
-      {% if teacher.qualification_list %}
+      {% if teacher.qualifications %}
         <h2 style="margin-top:var(--s-6)">Qualifications</h2>
         <ul class="tick-list">
-          {% for item in teacher.qualification_list %}
+          {% for item in teacher.qualifications %}
             <li>{% icon "medal" 18 %} <span>{{ item }}</span></li>
           {% endfor %}
         </ul>
@@ -74,16 +74,16 @@
       <div class="fact-card">
         <div class="card__kicker">At a glance</div>
         <dl class="fact-list" style="margin-top:var(--s-3)">
-          {% if teacher.level_list %}
+          {% if teacher.levels %}
             <div>
               <dt>{% icon "target" 15 %} Levels</dt>
-              <dd>{{ teacher.level_list|join:", " }}</dd>
+              <dd>{{ teacher.levels|join:", " }}</dd>
             </div>
           {% endif %}
-          {% if teacher.language_list %}
+          {% if teacher.languages %}
             <div>
               <dt>{% icon "globe" 15 %} Speaks</dt>
-              <dd>{{ teacher.language_list|join:", " }}</dd>
+              <dd>{{ teacher.languages|join:", " }}</dd>
             </div>
           {% endif %}
           <div>
@@ -93,7 +93,7 @@
         </dl>
 
         <a class="btn btn--primary btn--block btn--lg" style="margin-top:var(--s-5)"
-           href="#enquiry-teacher-{{ teacher.pk }}-section">
+           href="#enquiry-teacher-{{ teacher.slug }}-section">
           Request {{ teacher.name.split.0 }}
         </a>
       </div>

@@ -5,38 +5,34 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_control
 
 from courses.models import Course
-from games.models import MapCity
+from games.content import CITIES
 from leads.forms import EnquiryForm
-from pricing.models import Plan
-from teachers.models import Teacher
+from pricing.content import PLANS
+from teachers.content import TEACHERS
 
-from .models import Faq, HeroWord, Highlight, ProcessStep, SiteStat, Testimonial
+from .content import (
+    FAQS, HERO_WORDS, OPPORTUNITIES, PROCESS_STEPS, STATS, TESTIMONIALS, TRUST_POINTS,
+)
 from .seo import breadcrumb_schema, build_seo, faq_schema
 
 
 def home(request):
-    featured = Course.objects.published().filter(is_featured=True)[:3]
-    if not featured:
-        featured = Course.objects.published()[:3]
-
-    faqs = list(Faq.objects.filter(is_published=True, page=Faq.Page.HOME))
+    courses = Course.objects.published()
+    featured = courses.filter(is_featured=True)[:3] or courses[:3]
+    teachers = [teacher for teacher in TEACHERS if teacher.is_featured][:4] or TEACHERS[:4]
+    faqs = FAQS["home"]
 
     context = {
-        "hero_words": HeroWord.objects.filter(is_published=True)[:8],
+        "hero_words": HERO_WORDS[:8],
         "featured_courses": featured,
-        "plans": Plan.objects.published()[:3],
-        "teachers": Teacher.objects.published().filter(is_featured=True)[:4]
-        or Teacher.objects.published()[:4],
-        "steps": ProcessStep.objects.filter(is_published=True),
-        "trust_points": Highlight.objects.filter(
-            is_published=True, section=Highlight.Section.TRUST
-        ),
-        "opportunities": Highlight.objects.filter(
-            is_published=True, section=Highlight.Section.OPPORTUNITY
-        ),
-        "map_cities": [c.as_payload() for c in MapCity.objects.published()],
-        "stats": SiteStat.objects.filter(is_published=True)[:4],
-        "testimonials": Testimonial.objects.filter(is_published=True)[:3],
+        "plans": PLANS[:3],
+        "teachers": teachers,
+        "steps": PROCESS_STEPS,
+        "trust_points": TRUST_POINTS,
+        "opportunities": OPPORTUNITIES,
+        "map_cities": [city.as_payload() for city in CITIES],
+        "stats": STATS[:4],
+        "testimonials": TESTIMONIALS[:3],
         "faqs": faqs,
         "form": EnquiryForm(),
         "form_id": "home",
@@ -52,7 +48,7 @@ def home(request):
                     "description": "German language school offering courses from A1 to B2.",
                     "url": f"{request.scheme}://{request.get_host()}/",
                 },
-                faq_schema(faqs and [(f.question, f.answer) for f in faqs] or []),
+                faq_schema([(f.question, f.answer) for f in faqs]),
             ],
         ),
     }
@@ -60,11 +56,11 @@ def home(request):
 
 
 def process(request):
-    faqs = list(Faq.objects.filter(is_published=True, page=Faq.Page.PROCESS))
+    faqs = FAQS["process"]
     context = {
-        "steps": ProcessStep.objects.filter(is_published=True),
+        "steps": PROCESS_STEPS,
         "faqs": faqs,
-        "teachers": Teacher.objects.published()[:3],
+        "teachers": TEACHERS[:3],
         "form": EnquiryForm(),
         "form_id": "process",
         "seo": build_seo(

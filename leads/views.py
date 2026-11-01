@@ -1,14 +1,13 @@
 """The enquiry form: a full page, plus an HTMX-submitted block used sitewide."""
 
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.shortcuts import redirect, render
 
+from core.content import FAQS
 from core.seo import breadcrumb_schema, build_seo
-from core.models import Faq
 from courses.models import Course
-from pricing.models import Plan
-from teachers.models import Teacher
+from pricing.content import get_plan
+from teachers.content import get_teacher
 
 from .forms import EnquiryForm
 from .services import attach_context, is_rate_limited, notify_team
@@ -16,18 +15,11 @@ from .services import attach_context, is_rate_limited, notify_team
 
 def _context_objects(request):
     """Resolve the optional course/plan/teacher the form was submitted with."""
-    course = plan = teacher = None
-    course_slug = request.POST.get("course") or request.GET.get("course")
-    plan_id = request.POST.get("plan") or request.GET.get("plan")
-    teacher_slug = request.POST.get("teacher") or request.GET.get("teacher")
+    def value(name):
+        return request.POST.get(name) or request.GET.get(name)
 
-    if course_slug:
-        course = Course.objects.filter(slug=course_slug, is_published=True).first()
-    if plan_id and str(plan_id).isdigit():
-        plan = Plan.objects.filter(pk=plan_id, is_published=True).first()
-    if teacher_slug:
-        teacher = Teacher.objects.filter(slug=teacher_slug, is_published=True).first()
-    return course, plan, teacher
+    course = Course.objects.published().filter(slug=value("course") or "").first()
+    return course, get_plan(value("plan")), get_teacher(value("teacher"))
 
 
 def submit(request):
@@ -94,7 +86,7 @@ def _page_context(request, form=None):
         "course": course,
         "plan": plan,
         "teacher": teacher,
-        "faqs": Faq.objects.filter(is_published=True, page=Faq.Page.ENQUIRY),
+        "faqs": FAQS["enquiry"],
         "seo": build_seo(
             title="Talk to us about learning German",
             description="Tell us your level and your goal and we will recommend a "
